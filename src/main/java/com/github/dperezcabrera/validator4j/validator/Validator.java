@@ -57,15 +57,15 @@ public class Validator {
         return new Validator(rules, index);
     }
 
-    public static <T> Supplier<T> p(T object) {
+    public static <T> Supplier<T> get(T object) {
         return () -> object;
     }
 
     public Selector check(Object element, Object... elements) {
         Object[] totalElements = new Object[elements.length + 1];
-        totalElements[0] = get(element);
+        totalElements[0] = getObject(element);
         for (int i = 0; i < elements.length; i++) {
-            totalElements[i + 1] = get(elements[i]);
+            totalElements[i + 1] = getObject(elements[i]);
         }
         ErrorManager errorManager = new ErrorManagerBase();
         Selector selector = new SelectorBase(index, totalElements);
@@ -76,7 +76,7 @@ public class Validator {
         return selector;
     }
 
-    private Object get(Object obj) {
+    private Object getObject(Object obj) {
         if (obj != null && obj instanceof Supplier) {
             return ((Supplier) obj).get();
         }

@@ -54,6 +54,7 @@ public class ErrorManagerBase implements ErrorManager {
     public void check() {
         if (errors != null){
             StringBuilder sb = new StringBuilder();
+            // FIXME: create a esception message
             throw  new ValidatorException(sb.toString(), errors);
         }
     }
