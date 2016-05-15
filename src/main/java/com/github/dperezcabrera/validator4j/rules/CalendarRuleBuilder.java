@@ -2,7 +2,7 @@
  * Copyright (C) 2015 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published from
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -14,38 +14,48 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.builders;
+package com.github.dperezcabrera.validator4j.rules;
 
-import java.util.Calendar;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
+import java.util.Calendar;
 import com.github.dperezcabrera.validator4j.validator.ParameterRuleBuilderBase;
 import com.github.dperezcabrera.validator4j.validator.ParameterRules;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
- * @param <T>
  * @param <F>
  */
-public class CalendarRuleBuilder<T extends Calendar, F extends CalendarRuleBuilder<T, F>> extends ParameterRuleBuilderBase<T, F> {
+public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends ParameterRuleBuilderBase<Calendar, F> {
 
-    protected CalendarRuleBuilder(ParameterRules<T> parameterRule) {
+    protected CalendarRuleBuilder(ParameterRules<Calendar> parameterRule) {
         super(parameterRule);
     }
 
-    public F before(T parameter) {
+    public F before(Calendar parameter) {
         return addRule(t -> t.compareTo(parameter) < 0);
     }
-    
-    public F before(ProviderBuilder<T,?> parameterProviderBuilder) {
+
+    public F before(ProviderBuilder<?, Calendar, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) < 0);
     }
-    
-    public F after(T parameter) {
+
+    public F after(Calendar parameter) {
         return addRule(t -> t.compareTo(parameter) > 0);
     }
-    
-    public F after(ProviderBuilder<T,?> parameterProviderBuilder) {
+
+    public F after(ProviderBuilder<?, Calendar, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) > 0);
+    }
+
+    public static final class CalendarRuleBuilderBase extends CalendarRuleBuilder<CalendarRuleBuilderBase> {
+
+        private CalendarRuleBuilderBase(ParameterRules<Calendar> parameterRule) {
+            super(parameterRule);
+        }
+    }
+
+    public static CalendarRuleBuilderBase dateRule(String name) {
+        return new CalendarRuleBuilderBase(new ParameterRules<>(name, Calendar.class));
     }
 }

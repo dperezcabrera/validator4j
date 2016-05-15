@@ -2,7 +2,7 @@
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published from
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -16,18 +16,24 @@
  */
 package com.github.dperezcabrera.validator4j.validator;
 
+import static com.github.dperezcabrera.validator4j.rules.CalendarRuleBuilder.dateRule;
+import static com.github.dperezcabrera.validator4j.rules.ComparableRuleBuilder.cmpRule;
+import static com.github.dperezcabrera.validator4j.rules.StringRuleBuilder.stringRule;
+import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.core.ValidatorException;
+import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.now;
 import java.util.Calendar;
 import org.apache.commons.lang3.time.DateUtils;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.MONTH;
 import static java.util.Calendar.YEAR;
 import static com.github.dperezcabrera.validator4j.validator.Validator.*;
-import static com.github.dperezcabrera.validator4j.validator.BuilderBase.*;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.date;
+import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 
 /**
  *
@@ -39,7 +45,7 @@ public class ValidatorTest {
             stringRule("name").notNull().startsWith("na").contains("me"),
             stringRule("id").mustBeNull(),
             cmpRule("child").notNull().range(2, 5),
-            stringRule("email@a.com").notIn("admin@a.com", "pepe@a.com").contains("@"),
+            stringRule("email").notIn("admin@a.com", "pepe@a.com").contains("@"),
             dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
             dateRule("activated").notNull(),
             dateRule("deactivated").after(date("activated").add(3, MONTH))
@@ -48,7 +54,6 @@ public class ValidatorTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Ignore
     @Test
     public void integrationTestCheckOk() {
         String name = "name";
@@ -61,10 +66,14 @@ public class ValidatorTest {
         active = DateUtils.ceiling(active, DATE);
         deactive.add(DATE, 1);
         deactive.add(MONTH, 3);
-        deactive = null;
         int child = 3;
 
-        CREATE_USER_VALIDATOR.check(name, id, child, email, birthay, active, deactive);
+        Selector selector = CREATE_USER_VALIDATOR.check(name, id, child, p(email), p(birthay.clone()), active, deactive);
+        String resultEmail = selector.select("email", String.class);
+        Calendar resultBirthay = selector.select("birthay", Calendar.class);
+        
+        assertEquals(email, resultEmail);
+        assertEquals(birthay, resultBirthay);
     }
 
     @Test
@@ -79,7 +88,6 @@ public class ValidatorTest {
         birthay.add(DATE, 1);
         active = DateUtils.ceiling(active, DATE);
         deactive.add(MONTH, 3);
-        deactive = null;
         int child = 6;
 
         thrown.expect(ValidatorException.class);

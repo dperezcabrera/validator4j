@@ -23,8 +23,16 @@ import com.github.dperezcabrera.validator4j.core.Selector;
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  * @param <T>
  */
-@FunctionalInterface
-public interface Function<T> {
+public class ProviderBase<T> implements Provider<T> {
 
-    public T apply(T item, Selector selector);
+    private T value;
+
+    public ProviderBase(T value) {
+        this.value = value;
+    }
+
+    @Override
+    public T data(Selector selector) {
+        return value;
+    }
 }

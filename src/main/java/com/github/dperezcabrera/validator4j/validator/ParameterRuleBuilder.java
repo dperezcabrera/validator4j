@@ -22,5 +22,6 @@ package com.github.dperezcabrera.validator4j.validator;
  */
 @FunctionalInterface
 public interface ParameterRuleBuilder<T> {
+
     public ParameterRules<T> build();
 }

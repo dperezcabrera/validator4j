@@ -2,7 +2,7 @@
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published from
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -18,11 +18,11 @@ package com.github.dperezcabrera.validator4j.validator;
 
 import java.util.Arrays;
 import java.util.Collection;
-import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.core.Rule;
 import com.github.dperezcabrera.validator4j.core.RuleBase;
 import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.core.SelectorPredicate;
+import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.validator.ParameterRules.NullConstraint;
 import java.util.function.Predicate;
 
@@ -71,11 +71,11 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
     }
 
     public F in(T... parameters) {
-        return addRule(t -> Arrays.asList(parameters).contains(t));
+        return addRule(Arrays.asList(parameters)::contains);
     }
 
     public F in(Collection<T> parameter) {
-        return addRule(t -> parameter.contains(t));
+        return addRule(parameter::contains);
     }
 
     public F notIn(T... parameters) {
@@ -90,7 +90,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return addRule(t -> t.equals(parameter));
     }
 
-    public F equalsTo(ProviderBuilder<T, ?> parameterProviderBuilder) {
+    public F equalsTo(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.equals(parameterProviderBuilder.data(s)));
     }
 
@@ -98,7 +98,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return addRule(t -> !t.equals(parameter));
     }
 
-    public F notEqualsTo(ProviderBuilder<T, ?> parameterProviderBuilder) {
+    public F notEqualsTo(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.equals(parameterProviderBuilder.data(s)));
     }
 
@@ -108,5 +108,9 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
             nullable();
         }
         return parameterRule;
+    }
+    
+    public static <F extends ParameterRuleBuilderBase<Object, F>> ParameterRuleBuilderBase<Object, F> objectRule(String name) {
+        return new ParameterRuleBuilderBase<>(new ParameterRules<>(name, Object.class));
     }
 }

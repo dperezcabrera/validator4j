@@ -2,7 +2,7 @@
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published from
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -19,43 +19,85 @@ package com.github.dperezcabrera.validator4j.provider;
 import com.github.dperezcabrera.validator4j.core.Selector;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
+ * @param <B>
  * @param <T>
  * @param <F>
  */
-public class ProviderBuilder<T, F extends ProviderBuilder<T, F>> {
+public class ProviderBuilder<B, T, F extends ProviderBuilder<B, T, F>> {
 
-    private Provider<T> provider;
-    private List<Function<T>> functions;
+    private Provider<B> provider;
+    private List<BiFunction> functions;
 
-    public ProviderBuilder(Provider<T> provider) {
+    public ProviderBuilder(Provider<B> provider) {
         this.provider = provider;
+        this.functions = new ArrayList<>();
     }
 
-    public F addFunction(Function<T> function) {
-        if (functions == null) {
-            functions = new ArrayList<>();
-        }
-        functions.add(function);
+    protected ProviderBuilder(Provider<B> provider, List<BiFunction> functions) {
+        this.provider = provider;
+        this.functions = functions;
+    }
+
+    private F add(BiFunction<T, Selector, T> function) {
+        this.functions.add(function);
         return (F) this;
     }
 
-    public Provider<T> build() {
-        Provider<T> result = provider;
-        if (functions != null) {
-            result = new ProviderChain<>(provider, functions);
-        }
-        return result;
+    public F addFunction(BiFunction<T, Selector, T> function) {
+        return add(function);
+    }
+
+    public F addFunction(Function<T, T> function) {
+        return add((t, s) -> function.apply(t));
     }
     
+    public F addFunctionConsumer(Consumer<T> consumer) {
+        return add((t, s) -> {
+            consumer.accept(t);
+            return t;
+        });
+    }
+
+    public F addFunctionConsumer(BiConsumer<T, Selector> consumer) {
+        return add((t, s) -> {
+            consumer.accept(t, s);
+            return t;
+        });
+    }
+
+    private <K, G extends ProviderBuilder<B, K, G>> G add(BiFunction<T, Selector, K> function, BiProviderBuilderFactory<B, K, G> factory) {
+        List<BiFunction> nextFunctions = new ArrayList<>(this.functions);
+        nextFunctions.add(function);
+        return (G) factory.build(provider, new ArrayList<>(nextFunctions));
+    }
+
+    public <K, G extends ProviderBuilder<B, K, G>> G addFunction(BiFunction<T, Selector, K> function, BiProviderBuilderFactory<B, K, G> factory) {
+        return add(function, factory);
+    }
+
+    public <K, G extends ProviderBuilder<B, K, G>> G addFunction(Function<T, K> function, BiProviderBuilderFactory<B, K, G> factory) {
+        return add((t, s) -> function.apply(t), factory);
+    }
+
     public T data(Selector s) {
-        Provider<T> result = provider;
-        if (functions != null) {
-            result = new ProviderChain<>(provider, functions);
+        Object item = provider.data(s);
+        for (BiFunction function : functions) {
+            item = function.apply(item, s);
         }
-        return result.data(s);
+        return (T) item;
+    }
+
+    @FunctionalInterface
+    public interface BiProviderBuilderFactory<B, T, F extends ProviderBuilder<B, T, F>> {
+
+        ProviderBuilder<B, T, F> build(Provider<B> provider, List<BiFunction> functions);
     }
 }

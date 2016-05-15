@@ -39,9 +39,11 @@ public class ParameterRules<T> {
     private String name;
     private NullConstraint nullConstraint;
     private List<Rule<T>> rules = null;
-
-    public ParameterRules(String name) {
+    private Class<T> type;
+    
+    public ParameterRules(String name, Class<T> type) {
         this.name = name;
+        this.type = type;
     }
 
     public void addRule(Rule<T> rule) {
@@ -68,14 +70,12 @@ public class ParameterRules<T> {
     }
 
     public void validate(ErrorManager errorManager, Selector selector) {
-        T value = (T) selector.select(name, Object.class);
+        T value = selector.select(name, type);
         if (value != null) {
             if (nullConstraint == NullConstraint.NULL) {
                 errorManager.addErrorMessage(name, "");
             } else if (rules != null) {
-                for (Rule<T> rule : rules) {
-                    rule.validate(value, name, selector, errorManager);
-                }
+                rules.stream().forEach(rule -> rule.validate(value, name, selector, errorManager));
             }
         } else if (nullConstraint == NullConstraint.NOT_NULL) {
             errorManager.addErrorMessage(name, "");

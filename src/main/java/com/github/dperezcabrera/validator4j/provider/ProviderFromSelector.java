@@ -28,12 +28,13 @@ public class ProviderFromSelector<T> implements Provider<T> {
     private String name;
     private Class<T> type;
 
-    public ProviderFromSelector(String name) {
+    public ProviderFromSelector(String name, Class<T> type) {
         this.name = name;
+        this.type = type;
     }
 
     @Override
     public T data(Selector selector) {
-        return (T) selector.select(name, type);
+        return selector.select(name, type);
     }
 }
