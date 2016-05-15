@@ -55,7 +55,7 @@ The Simple Validator for Java is a software library that provides a very simple 
     );
 
     Selector selector = userValidator.check(get(userRepository.findOne(userId)));
-        
+
     User user = selector.select("user", User.class);
 ```
 

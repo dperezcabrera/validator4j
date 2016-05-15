@@ -71,12 +71,11 @@ public class ValidatorTest {
         Selector selector = CREATE_USER_VALIDATOR.check(name, id, child, get(email), get(birthay.clone()), activationDate, deactivationDate);
         String resultEmail = selector.select("email", String.class);
         Calendar resultBirthay = selector.select("birthay", Calendar.class);
-        
+
         assertEquals(email, resultEmail);
         assertEquals(birthay, resultBirthay);
     }
 
-    @Ignore
     @Test
     public void integrationTestCheckFails() {
         String name = "name";
