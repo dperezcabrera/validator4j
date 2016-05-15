@@ -71,7 +71,7 @@ public class CalendarProviderBuilder<B, F extends CalendarProviderBuilder<B, F>>
         return addFunction(t -> DateUtils.round(t, field));
     }
 
-    F copy() {
+    protected F copy() {
         return addFunction(t -> (Calendar) t.clone());
     }
 

@@ -31,7 +31,6 @@ import static com.github.dperezcabrera.validator4j.validator.Validator.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.Ignore;
 import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.date;
 import static org.junit.Assert.assertEquals;
 
@@ -41,7 +40,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ValidatorTest {
 
-    Validator CREATE_USER_VALIDATOR = rules(
+    private Validator CREATE_USER_VALIDATOR = rules(
             stringRule("name").notNull().startsWith("na").contains("me"),
             stringRule("id").mustBeNull(),
             cmpRule("child").notNull().range(2, 5),
