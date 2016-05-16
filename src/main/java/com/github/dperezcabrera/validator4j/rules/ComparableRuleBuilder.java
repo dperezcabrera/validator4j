@@ -1,8 +1,8 @@
-/*
- * Copyright (C) 2015 David Pérez Cabrera <dperezcabrera@gmail.com>
+/* 
+ * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published from
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -36,7 +36,7 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
         return addRule(t -> t.compareTo(parameter) > 0);
     }
 
-    public F greatherThan(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F greatherThan(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) > 0);
     }
 
@@ -44,7 +44,7 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
         return addRule(t -> t.compareTo(parameter) < 0);
     }
 
-    public F lessThan(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F lessThan(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) < 0);
     }
 
@@ -52,7 +52,7 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
         return addRule(t -> t.compareTo(parameter) >= 0);
     }
 
-    public F greatherEqualsThan(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F greatherEqualsThan(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) >= 0);
     }
 
@@ -60,7 +60,7 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
         return addRule(t -> t.compareTo(parameter) <= 0);
     }
 
-    public F lessEqualsThan(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F lessEqualsThan(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) <= 0);
     }
 
@@ -68,15 +68,15 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
         return addRule(t -> range(t, minValue, maxValue));
     }
 
-    public F range(ProviderBuilder<?, T, ?> minParameterProviderBuilder, T maxValue) {
+    public F range(ProviderBuilder<T, ?> minParameterProviderBuilder, T maxValue) {
         return addRule((t, s) -> range(t, minParameterProviderBuilder.data(s), maxValue));
     }
 
-    public F range(T minValue, ProviderBuilder<?, T, ?> maxParameterProviderBuilder) {
+    public F range(T minValue, ProviderBuilder<T, ?> maxParameterProviderBuilder) {
         return addRule((t, s) -> range(t, minValue, maxParameterProviderBuilder.data(s)));
     }
 
-    public F range(ProviderBuilder<?, T, ?> minParameterProviderBuilder, ProviderBuilder<?, T, ?> maxParameterProviderBuilder) {
+    public F range(ProviderBuilder<T, ?> minParameterProviderBuilder, ProviderBuilder<T, ?> maxParameterProviderBuilder) {
         return addRule((t, s) -> range(t, minParameterProviderBuilder.data(s), maxParameterProviderBuilder.data(s)));
     }
 

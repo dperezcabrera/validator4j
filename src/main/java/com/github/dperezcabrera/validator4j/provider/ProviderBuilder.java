@@ -2,7 +2,7 @@
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published from
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -27,21 +27,21 @@ import java.util.function.Function;
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
- * @param <B>
+
  * @param <T>
  * @param <F>
  */
-public class ProviderBuilder<B, T, F extends ProviderBuilder<B, T, F>> {
+public class ProviderBuilder<T, F extends ProviderBuilder<T, F>> {
 
-    private Provider<B> provider;
-    private List<BiFunction> functions;
+    private Provider<?> provider;
+    private List<BiFunction<?, Selector, ?>> functions;
 
-    public ProviderBuilder(Provider<B> provider) {
+    public ProviderBuilder(Provider<?> provider) {
         this.provider = provider;
         this.functions = new ArrayList<>();
     }
 
-    protected ProviderBuilder(Provider<B> provider, List<BiFunction> functions) {
+    protected ProviderBuilder(Provider<?> provider, List<BiFunction<?, Selector ,?>> functions) {
         this.provider = provider;
         this.functions = functions;
     }
@@ -73,17 +73,17 @@ public class ProviderBuilder<B, T, F extends ProviderBuilder<B, T, F>> {
         });
     }
 
-    private <K, G extends ProviderBuilder<B, K, G>> G add(BiFunction<T, Selector, K> function, BiProviderBuilderFactory<B, K, G> factory) {
-        List<BiFunction> nextFunctions = new ArrayList<>(this.functions);
+    private <K, G extends ProviderBuilder<K, G>> G add(BiFunction<T, Selector, K> function, ProviderBuilderFactory<K, G> factory) {
+        List<BiFunction<?, Selector, ?>> nextFunctions = new ArrayList<>(this.functions);
         nextFunctions.add(function);
         return (G) factory.build(provider, new ArrayList<>(nextFunctions));
     }
 
-    public <K, G extends ProviderBuilder<B, K, G>> G addFunction(BiFunction<T, Selector, K> function, BiProviderBuilderFactory<B, K, G> factory) {
+    public <K, G extends ProviderBuilder<K, G>> G addFunction(BiFunction<T, Selector, K> function, ProviderBuilderFactory<K, G> factory) {
         return add(function, factory);
     }
 
-    public <K, G extends ProviderBuilder<B, K, G>> G addFunction(Function<T, K> function, BiProviderBuilderFactory<B, K, G> factory) {
+    public <K, G extends ProviderBuilder<K, G>> G addFunction(Function<T, K> function, ProviderBuilderFactory<K, G> factory) {
         return add((t, s) -> function.apply(t), factory);
     }
 
@@ -96,8 +96,8 @@ public class ProviderBuilder<B, T, F extends ProviderBuilder<B, T, F>> {
     }
 
     @FunctionalInterface
-    public interface BiProviderBuilderFactory<B, T, F extends ProviderBuilder<B, T, F>> {
+    public interface ProviderBuilderFactory<T, F extends ProviderBuilder<T, F>> {
 
-        ProviderBuilder<B, T, F> build(Provider<B> provider, List<BiFunction> functions);
+        ProviderBuilder<T, F> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions);
     }
 }

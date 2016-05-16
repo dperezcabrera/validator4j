@@ -2,7 +2,7 @@
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published from
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -90,7 +90,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return addRule(t -> t.equals(parameter));
     }
 
-    public F equalsTo(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F equalsTo(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.equals(parameterProviderBuilder.data(s)));
     }
 
@@ -98,7 +98,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return addRule(t -> !t.equals(parameter));
     }
 
-    public F notEqualsTo(ProviderBuilder<?, T, ?> parameterProviderBuilder) {
+    public F notEqualsTo(ProviderBuilder<T, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.equals(parameterProviderBuilder.data(s)));
     }
 

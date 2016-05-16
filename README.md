@@ -10,22 +10,20 @@
 The Simple Validator for Java is a software library that provides a very simple API with a powerful rule engine.
 
 ## Rules definition: Creating a validator
-
 ```java
     Validator CREATE_USER_VALIDATOR = rules(
-            stringRule("name").notNull().startsWith("sr.").contains("John"),
-            stringRule("id").mustBeNull(),
-            cmpRule("children").notNull().range(2, 4),
-            stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
-            dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
-            dateRule("activationDate").notNull(),
-            dateRule("deactivationDate").after(date("activated").add(3, MONTH))
+        stringRule("name").notNull().startsWith("Sr.").contains("John"),
+        stringRule("id").mustBeNull(),
+        cmpRule("children").notNull().range(2, 4),
+        stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+        dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
+        dateRule("activationDate").notNull(),
+        dateRule("deactivationDate").after(date("activated").add(3, MONTH))
     );
 ```
 
 ## Basic validation
 ```java
-
     String name = "Sr. John Doe";
     String id = null;
     String email = "john.doe@example.com";
@@ -43,20 +41,56 @@ The Simple Validator for Java is a software library that provides a very simple 
 
 ## Obtaining a valid beans from Selector
 ```java
+    String name = "Sr. John Doe";
+    String id = null;
+    String email = "john.doe@example.com";
+    Calendar birthay = Calendar.getInstance();
+    Calendar activationDate = Calendar.getInstance();
+    Calendar deactivationDate = Calendar.getInstance();
+    birthay.add(YEAR, -18);
+    activationDate = DateUtils.ceiling(activationDate, DATE);
+    deactivationDate.add(DATE, 1);
+    deactivationDate.add(MONTH, 3);
+    int children = 3;
 
+    Selector selector = CREATE_USER_VALIDATOR.check(name, id, children, get(email), birthay, activationDate, deactivationDate);
+    
+    String emailResult = selector.select("email", String.class);
+
+    assertEquals(email, emailResult);
+```
+
+## Validate attributes
+```java
     Long userId = ...;
 
-    Validator userValidator = rules(
-        objectRule("user").notNull(),
-        stringRule("user.name").notNull().startsWith("Sr."),
-        stringRule("user.activationDate").notNull().before(now().ceil(DATE)),
-        stringRule("user.deactivationDate").after(now().trunk(DATE).sub(1, DATE)), // It can be null
-        stringRule("user.id").notNull().equalsTo(userId)
+    Validator obtainUserValidator = rules(
+        cmpRule("user.id").notNull().greatherThan(0L),
+        stringRule("user.name").notNull().notEmpty(),
+        stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+        dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
+        dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(1, DATE)),
+        dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(1, DATE)),
+        objectRule("user.address").notNull(),
+        cmpRule("user.address.id").notNull(),
+        stringRule("user.address.address0").notNull().notEmpty().maxLength(24),
+        stringRule("user.address.address1").notNull().notEmpty().maxLength(24),
+        stringRule("user.address.city").notNull().minLength(4),
+        stringRule("user.address.region").notNull().minLength(4),
+        stringRule("user.address.zipCode").notNull().minLength(4).maxLength(8),
+        objectRule("user.address.country").notNull(),
+        cmpRule("user.address.country.id").notNull().greatherThan(0L),
+        stringRule("user.address.country.name").notNull().minLength(3).maxLength(12),
+        stringRule("user.address.country.language").notNull().minLength(4),
     );
 
-    Selector selector = userValidator.check(get(userRepository.findOne(userId)));
+    User expectedResult = userRepository.findOne(userId);
 
-    User user = selector.select("user", User.class);
+    Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)));
+
+    User result = selector.select("user", User.class);
+
+    assertEquals(expectedResult, result);
 ```
 
 

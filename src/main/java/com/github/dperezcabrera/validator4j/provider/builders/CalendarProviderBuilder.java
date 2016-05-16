@@ -16,6 +16,7 @@
  */
 package com.github.dperezcabrera.validator4j.provider.builders;
 
+import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
@@ -30,16 +31,15 @@ import java.util.function.BiFunction;
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
- * @param <B>
  * @param <F>
  */
-public class CalendarProviderBuilder<B, F extends CalendarProviderBuilder<B, F>> extends ProviderBuilder<B, Calendar, F> {
+public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> extends ProviderBuilder<Calendar, F> {
 
-    protected CalendarProviderBuilder(Provider<B> provider) {
+    protected CalendarProviderBuilder(Provider<?> provider) {
         super(provider);
     }
 
-    protected CalendarProviderBuilder(Provider<B> provider, List<BiFunction> functions) {
+    protected CalendarProviderBuilder(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(provider, functions);
     }
 
@@ -47,7 +47,7 @@ public class CalendarProviderBuilder<B, F extends CalendarProviderBuilder<B, F>>
         return addFunctionConsumer(t -> t.add(field, amount));
     }
 
-    public F add(ProviderBuilder<?, Integer, ?> amountProviderBuilder, int field) {
+    public F add(ProviderBuilder<Integer, ?> amountProviderBuilder, int field) {
         return addFunctionConsumer((t, s) -> t.add(field, amountProviderBuilder.data(s)));
     }
 
@@ -55,7 +55,7 @@ public class CalendarProviderBuilder<B, F extends CalendarProviderBuilder<B, F>>
         return addFunctionConsumer(t -> t.add(field, -amount));
     }
 
-    public F sub(ProviderBuilder<?, Integer, ?> amountProviderBuilder, int field) {
+    public F sub(ProviderBuilder<Integer, ?> amountProviderBuilder, int field) {
         return addFunctionConsumer((t, s) -> t.add(field, -amountProviderBuilder.data(s)));
     }
 
@@ -75,38 +75,38 @@ public class CalendarProviderBuilder<B, F extends CalendarProviderBuilder<B, F>>
         return addFunction(t -> (Calendar) t.clone());
     }
 
-    public StringProviderBuilderBase<B> toStr() {
-        return addFunction(t -> t.toString(), new StringProviderBuilderFactory<>());
+    public StringProviderBuilderBase string() {
+        return addFunction(t -> t.toString(), new StringProviderBuilderFactory());
     }
 
-    public static CalendarProviderBuilderBase<Calendar> now() {
-        return new CalendarProviderBuilderBase<>(new ProviderBase<>(Calendar.getInstance()));
+    public static CalendarProviderBuilderBase now() {
+        return new CalendarProviderBuilderBase(new ProviderBase<>(Calendar.getInstance()));
     }
 
-    public static CalendarProviderBuilderBase<Calendar> date(Calendar value) {
-        return new CalendarProviderBuilderBase<>(new ProviderBase<>((Calendar) value.clone()));
+    public static CalendarProviderBuilderBase date(Calendar value) {
+        return new CalendarProviderBuilderBase(new ProviderBase<>((Calendar) value.clone()));
     }
 
-    public static CalendarProviderBuilderBase<Calendar> date(String selectorName) {
-        return new CalendarProviderBuilderBase<>(new ProviderFromSelector<>(selectorName, Calendar.class)).copy();
+    public static CalendarProviderBuilderBase date(String selectorName) {
+        return new CalendarProviderBuilderBase(new ProviderFromSelector<>(selectorName, Calendar.class)).copy();
     }
 
-    public static final class CalendarProviderBuilderBase<U> extends CalendarProviderBuilder<U, CalendarProviderBuilderBase<U>> {
+    public static final class CalendarProviderBuilderBase extends CalendarProviderBuilder<CalendarProviderBuilderBase> {
 
-        private CalendarProviderBuilderBase(Provider<U> provider) {
+        private CalendarProviderBuilderBase(Provider<?> provider) {
             super(provider);
         }
 
-        private CalendarProviderBuilderBase(Provider<U> provider, List<BiFunction> functions) {
+        private CalendarProviderBuilderBase(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
             super(provider, functions);
         }
     }
 
-    public static class CalendarProviderBuilderFactory<U> implements BiProviderBuilderFactory<U, Calendar, CalendarProviderBuilderBase<U>> {
+    public static class CalendarProviderBuilderFactory implements ProviderBuilderFactory<Calendar, CalendarProviderBuilderBase> {
 
         @Override
-        public ProviderBuilder<U, Calendar, CalendarProviderBuilderBase<U>> build(Provider<U> provider, List<BiFunction> functions) {
-            return new CalendarProviderBuilderBase<>(provider, functions);
+        public ProviderBuilder<Calendar, CalendarProviderBuilderBase> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+            return new CalendarProviderBuilderBase(provider, functions);
         }
     }
 }

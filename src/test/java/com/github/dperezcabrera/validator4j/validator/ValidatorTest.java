@@ -32,6 +32,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.date;
+import static com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.integer;
+import static com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.stringFrom;
+import static com.github.dperezcabrera.validator4j.validator.ParameterRuleBuilderBase.objectRule;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -40,11 +46,13 @@ import static org.junit.Assert.assertEquals;
  */
 public class ValidatorTest {
 
-    private Validator CREATE_USER_VALIDATOR = rules(
-            stringRule("name").notNull().startsWith("na").contains("me"),
+    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    private Validator createUserValidator = rules(
             stringRule("id").mustBeNull(),
+            stringRule("name").notNull().startsWith("na").contains("am").endsWith("me"),
             cmpRule("child").notNull().range(2, 5),
-            stringRule("email").notIn("admin@a.com", "pepe@a.com").matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"),
+            stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
             dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
             dateRule("activationDate").notNull(),
             dateRule("deactivatedDate").after(date("activationDate").add(3, MONTH))
@@ -54,9 +62,9 @@ public class ValidatorTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void integrationTestCheckOk() {
-        String name = "name";
+    public void integrationBasicTestCheckOk() {
         String id = null;
+        String name = "name";
         String email = "email@a.com";
         Calendar birthay = Calendar.getInstance();
         Calendar activationDate = Calendar.getInstance();
@@ -67,7 +75,7 @@ public class ValidatorTest {
         deactivationDate.add(MONTH, 3);
         int child = 3;
 
-        Selector selector = CREATE_USER_VALIDATOR.check(name, id, child, get(email), get(birthay.clone()), activationDate, deactivationDate);
+        Selector selector = createUserValidator.check(id, name, child, get(email), get(birthay.clone()), activationDate, deactivationDate);
         String resultEmail = selector.select("email", String.class);
         Calendar resultBirthay = selector.select("birthay", Calendar.class);
 
@@ -91,6 +99,250 @@ public class ValidatorTest {
 
         thrown.expect(ValidatorException.class);
 
-        CREATE_USER_VALIDATOR.check(get(name), id, child, get(email), get(birthay), get(activationDate), get(deactivationDate));
+        createUserValidator.check(id, get(name), child, get(email), get(birthay), get(activationDate), get(deactivationDate));
+    }
+
+    @Test
+    public void integrationComplexTestCheckOk() {
+        UserRepository userRepository = new UserRepository();
+        Long userId = 1L;
+
+        Validator obtainUserValidator = rules(
+                cmpRule("user.id").notNull().greatherThan(0L),
+                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).length(integer("nameLength")),
+                stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+                dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
+                dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(1, DATE)),
+                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(1, DATE)),
+                objectRule("user.address").notNull(),
+                cmpRule("user.address.id").notNull().lessThan(1000L),
+                stringRule("user.address.address0").notNull().maxLength(24),
+                stringRule("user.address.address1").notNull().maxLength(24),
+                stringRule("user.address.city").notNull().minLength(2).maxLength(24),
+                stringRule("user.address.region").notNull().minLength(2).maxLength(24),
+                stringRule("user.address.zipCode").notNull().minLength(4).maxLength(8),
+                objectRule("user.address.country").notNull(),
+                cmpRule("user.address.country.id").notNull().greatherThan(0L),
+                stringRule("user.address.country.name").notNull().minLength(3).maxLength(12),
+                stringRule("user.address.country.language").notNull().minLength(4),
+                stringRule("namePrefix").notNull().maxLength(24),
+                stringRule("nameSufix").notNull().maxLength(integer(3).mult(integer("nameLength")).add(1).div(2).remain(10)),
+                objectRule("nameLength").notNull()
+        );
+        User expectedResult = userRepository.findOne(userId);
+        Integer nameLength = expectedResult.getName().length();
+
+        String namePrefix = "J";
+        String nameSufix = "n";
+
+        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameLength);
+
+        User result = selector.select("user", User.class);
+
+        assertEquals(expectedResult, result);
+    }
+
+    public static class UserRepository {
+
+        private Calendar birthay = Calendar.getInstance();
+        private Calendar signUpDate = Calendar.getInstance();
+
+        public UserRepository() {
+            birthay.add(YEAR, -18);
+            signUpDate.add(DATE, -10);
+        }
+
+        public User findOne(Long userId) {
+            User user = new User();
+            user.setId(userId);
+            user.setName("John");
+            user.setEmail("john@example.com");
+            user.setBirthay(birthay);
+            user.setSignUpDate(signUpDate);
+            user.setLastAccessDate((Calendar) signUpDate.clone());
+            Address address = new Address();
+            user.setAddress(address);
+            address.setId(22L);
+            address.setAddress0("Street 0");
+            address.setAddress1("number 1");
+            address.setCity("City");
+            address.setRegion("Region");
+            address.setZipCode("0000");
+            Country country = new Country();
+            address.setCountry(country);
+            country.setId(12L);
+            country.setName("Country name");
+            country.setLanguage("Language");
+            return user;
+        }
+    }
+
+    public static abstract class AbtractEntity {
+
+        private Long id;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+    }
+
+    public static class User extends AbtractEntity {
+
+        private String name;
+        private String email;
+        private Calendar birthay;
+        private Calendar signUpDate;
+        private Calendar lastAccessDate;
+        private Address address;
+
+        public User() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public Calendar getBirthay() {
+            return birthay;
+        }
+
+        public void setBirthay(Calendar birthay) {
+            this.birthay = birthay;
+        }
+
+        public Calendar getSignUpDate() {
+            return signUpDate;
+        }
+
+        public void setSignUpDate(Calendar signUpDate) {
+            this.signUpDate = signUpDate;
+        }
+
+        public Calendar getLastAccessDate() {
+            return lastAccessDate;
+        }
+
+        public void setLastAccessDate(Calendar lastAccessDate) {
+            this.lastAccessDate = lastAccessDate;
+        }
+
+        public Address getAddress() {
+            return address;
+        }
+
+        public void setAddress(Address address) {
+            this.address = address;
+        }
+    }
+
+    public static class Address extends AbtractEntity {
+
+        private String address0;
+        private String address1;
+        private String city;
+        private String region;
+        private String zipCode;
+        private Country country;
+
+        public String getAddress0() {
+            return address0;
+        }
+
+        public void setAddress0(String address0) {
+            this.address0 = address0;
+        }
+
+        public String getAddress1() {
+            return address1;
+        }
+
+        public void setAddress1(String address1) {
+            this.address1 = address1;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        public String getRegion() {
+            return region;
+        }
+
+        public void setRegion(String region) {
+            this.region = region;
+        }
+
+        public String getZipCode() {
+            return zipCode;
+        }
+
+        public void setZipCode(String zipCode) {
+            this.zipCode = zipCode;
+        }
+
+        public Country getCountry() {
+            return country;
+        }
+
+        public void setCountry(Country country) {
+            this.country = country;
+        }
+    }
+
+    public static class Country extends AbtractEntity {
+
+        private String language;
+        private String name;
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(String language) {
+            this.language = language;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }

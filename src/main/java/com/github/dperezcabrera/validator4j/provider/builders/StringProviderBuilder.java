@@ -16,14 +16,15 @@
  */
 package com.github.dperezcabrera.validator4j.provider.builders;
 
+import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
-import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderBase;
 import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
+import static javafx.scene.input.KeyCode.B;
 
 /**
  *
@@ -31,13 +32,13 @@ import java.util.function.BiFunction;
  * @param <B>
  * @param <F>
  */
-public class StringProviderBuilder<B, F extends StringProviderBuilder<B, F>> extends ProviderBuilder<B, String, F> {
+public class StringProviderBuilder<F extends StringProviderBuilder<F>> extends ProviderBuilder<String, F> {
 
-    protected StringProviderBuilder(Provider<B> provider) {
+    protected StringProviderBuilder(Provider<?> provider) {
         super(provider);
     }
 
-    protected StringProviderBuilder(Provider<B> provider, List<BiFunction> functions) {
+    protected StringProviderBuilder(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(provider, functions);
     }
 
@@ -45,7 +46,7 @@ public class StringProviderBuilder<B, F extends StringProviderBuilder<B, F>> ext
         return addFunction(t -> t.substring(beginIndex));
     }
     
-    public F subString(ProviderBuilder<?, Integer, ?> providerBuilder) {
+    public F subString(ProviderBuilder<Integer, ?> providerBuilder) {
         return addFunction((t, s) -> t.substring(providerBuilder.data(s)));
     }
     
@@ -53,15 +54,15 @@ public class StringProviderBuilder<B, F extends StringProviderBuilder<B, F>> ext
         return addFunction(t -> t.substring(beginIndex, endIndex));
     }
     
-    public F subString(int beginIndex, ProviderBuilder<?, Integer, ?> endIndexProviderBuilder) {
+    public F subString(int beginIndex, ProviderBuilder<Integer, ?> endIndexProviderBuilder) {
         return addFunction((t, s) -> t.substring(beginIndex, endIndexProviderBuilder.data(s)));
     }
     
-    public F subString(ProviderBuilder<?, Integer, ?> beginIndexProviderBuilder, int endIndex) {
+    public F subString(ProviderBuilder<Integer, ?> beginIndexProviderBuilder, int endIndex) {
         return addFunction((t, s) -> t.substring(beginIndexProviderBuilder.data(s), endIndex));
     }
     
-    public F subString(ProviderBuilder<?, Integer, ?> beginIndexProviderBuilder, ProviderBuilder<?, Integer, ?> endIndexProviderBuilder) {
+    public F subString(ProviderBuilder<Integer, ?> beginIndexProviderBuilder, ProviderBuilder<Integer, ?> endIndexProviderBuilder) {
         return addFunction((t, s) -> t.substring(beginIndexProviderBuilder.data(s), endIndexProviderBuilder.data(s)));
     }
     
@@ -69,38 +70,38 @@ public class StringProviderBuilder<B, F extends StringProviderBuilder<B, F>> ext
         return addFunction(t -> String.join("", t, parameter));
     }
 
-    public F concat(ProviderBuilder<?, String, ?> providerBuilder) {
+    public F concat(ProviderBuilder<String, ?> providerBuilder) {
         return addFunction((t, s) -> String.join("", t, providerBuilder.data(s)));
     }
 
-    public IntegerProviderBuilderBase<B> toInt() {
-        return addFunction(t ->  Integer.valueOf(t), new IntegerProviderBuilderFactory<>());
+    public IntegerProviderBuilder toInt() {
+        return addFunction(t ->  Integer.valueOf(t), new IntegerProviderBuilderFactory());
     }
         
-    public static final class StringProviderBuilderBase<U> extends StringProviderBuilder<U, StringProviderBuilderBase<U>> {
+    public static final class StringProviderBuilderBase extends StringProviderBuilder<StringProviderBuilderBase> {
 
-        private StringProviderBuilderBase(Provider<U> provider) {
+        private StringProviderBuilderBase(Provider<?> provider) {
             super(provider);
         }
 
-        private StringProviderBuilderBase(Provider<U> provider, List<BiFunction> functions) {
+        private StringProviderBuilderBase(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
             super(provider, functions);
         }
     }
 
-    public static StringProviderBuilderBase<String> string(String value) {
-        return new StringProviderBuilderBase<>(new ProviderBase<>(value));
+    public static StringProviderBuilderBase string(String value) {
+        return new StringProviderBuilderBase(new ProviderBase<>(value));
     }
 
-    public static StringProviderBuilderBase<String> stringFrom(String selectorName) {
-        return new StringProviderBuilderBase<>(new ProviderFromSelector<>(selectorName, String.class));
+    public static StringProviderBuilderBase stringFrom(String selectorName) {
+        return new StringProviderBuilderBase(new ProviderFromSelector<>(selectorName, String.class));
     }
         
-    public static class StringProviderBuilderFactory<U> implements BiProviderBuilderFactory<U, String, StringProviderBuilderBase<U>> {
+    public static class StringProviderBuilderFactory implements ProviderBuilderFactory<String, StringProviderBuilderBase> {
 
         @Override
-        public ProviderBuilder<U, String, StringProviderBuilderBase<U>> build(Provider<U> provider, List<BiFunction> functions) {
-            return new StringProviderBuilderBase<>(provider, functions);
+        public ProviderBuilder<String, StringProviderBuilderBase> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+            return new StringProviderBuilderBase(provider, functions);
         }
     }
 }

@@ -21,7 +21,7 @@ import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
-import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerOperator;
+import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongOperator;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -29,62 +29,62 @@ import java.util.function.BiFunction;
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-public class IntegerProviderBuilder extends NumberProviderBuilder<Integer, IntegerOperator, IntegerProviderBuilder> {
+public class LongProviderBuilder extends NumberProviderBuilder<Long, LongOperator, LongProviderBuilder> {
 
-    public IntegerProviderBuilder(IntegerOperator operator, Provider<?> provider) {
+    public LongProviderBuilder(LongOperator operator, Provider<Long> provider) {
         super(operator, provider);
     }
 
-    public IntegerProviderBuilder(IntegerOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+    public LongProviderBuilder(LongOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(operator, provider, functions);
     }
 
-    public static class IntegerOperator implements NumberProviderBuilder.Operator<Integer> {
+    public static class LongOperator implements NumberProviderBuilder.Operator<Long> {
 
-        public static IntegerOperator INSTANCE = new IntegerOperator();
+        public static LongOperator INSTANCE = new LongOperator();
 
-        protected IntegerOperator() {
+        protected LongOperator() {
         }
 
         @Override
-        public Integer add(Integer n0, Integer n1) {
+        public Long add(Long n0, Long n1) {
             return n0 + n1;
         }
 
         @Override
-        public Integer sub(Integer n0, Integer n1) {
+        public Long sub(Long n0, Long n1) {
             return n0 - n1;
         }
 
         @Override
-        public Integer mult(Integer n0, Integer n1) {
+        public Long mult(Long n0, Long n1) {
             return n0 * n1;
         }
 
         @Override
-        public Integer div(Integer n0, Integer n1) {
+        public Long div(Long n0, Long n1) {
             return n0 / n1;
         }
 
         @Override
-        public Integer remain(Integer n0, Integer n1) {
+        public Long remain(Long n0, Long n1) {
             return n0 % n1;
         }
     }
 
-    public static IntegerProviderBuilder integer(String selectorName) {
-        return new IntegerProviderBuilder(IntegerOperator.INSTANCE, new ProviderFromSelector<>(selectorName, Integer.class));
+    public static LongProviderBuilder longs(String selectorName) {
+        return new LongProviderBuilder(LongOperator.INSTANCE, new ProviderFromSelector(selectorName, Long.class));
     }
 
-    public static IntegerProviderBuilder integer(Integer value) {
-        return new IntegerProviderBuilder(IntegerOperator.INSTANCE, new ProviderBase<>(value));
+    public static LongProviderBuilder longs(Long value) {
+        return new LongProviderBuilder(LongOperator.INSTANCE, new ProviderBase(value));
     }
 
-    public static class IntegerProviderBuilderFactory implements ProviderBuilderFactory<Integer, IntegerProviderBuilder> {
+    public static class LongProviderBuilderFactory implements ProviderBuilderFactory<Long, LongProviderBuilder> {
 
         @Override
-        public ProviderBuilder<Integer, IntegerProviderBuilder> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
-            return new IntegerProviderBuilder(IntegerOperator.INSTANCE, provider, functions);
+        public ProviderBuilder<Long, LongProviderBuilder> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+            return new LongProviderBuilder(LongOperator.INSTANCE, provider, functions);
         }
     }
 }

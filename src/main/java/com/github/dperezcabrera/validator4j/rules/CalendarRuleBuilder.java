@@ -1,8 +1,8 @@
-/*
- * Copyright (C) 2015 David Pérez Cabrera <dperezcabrera@gmail.com>
+/* 
+ * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published from
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -36,7 +36,7 @@ public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends Param
         return addRule(t -> t.compareTo(parameter) < 0);
     }
 
-    public F before(ProviderBuilder<?, Calendar, ?> parameterProviderBuilder) {
+    public F before(ProviderBuilder<Calendar, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) < 0);
     }
 
@@ -44,7 +44,7 @@ public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends Param
         return addRule(t -> t.compareTo(parameter) > 0);
     }
 
-    public F after(ProviderBuilder<?, Calendar, ?> parameterProviderBuilder) {
+    public F after(ProviderBuilder<Calendar, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.compareTo(parameterProviderBuilder.data(s)) > 0);
     }
 

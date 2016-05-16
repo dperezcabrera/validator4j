@@ -40,8 +40,10 @@ public class SelectorBase implements Selector {
         String[] attributePath = name.split("\\.");
         Integer index = indexes.get(attributePath[0]);
         if (index == null) {
+            // TODO: add message
             throw new ConfigurationValidatorException("");
         } else if (index < 0 || index >= objects.length) {
+            // TODO: add message
             throw new ConfigurationValidatorException("");
         } else {
             return (T) get(attributePath, index, objects[index]);
@@ -53,12 +55,13 @@ public class SelectorBase implements Selector {
             Object temp = o;
             int i = index + 1;
             while (temp != null && i < keys.length) {
-                String methodName = getMethodName(keys[i]);
-                Method method = o.getClass().getMethod(methodName);
+                String methodName = getMethodName(keys[i++]);
+                Method method = temp.getClass().getMethod(methodName);
                 temp = method.invoke(temp);
             }
             return temp;
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            // TODO: add message
             throw new ConfigurationValidatorException("", ex);
         }
     }

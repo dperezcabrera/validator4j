@@ -1,8 +1,8 @@
-/*
- * Copyright (C) 2015 David Pérez Cabrera <dperezcabrera@gmail.com>
+/* 
+ * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published from
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -42,7 +42,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.startsWith(parameter));
     }
 
-    public F startsWith(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F startsWith(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.startsWith(parameterProviderBuilder.data(s)));
     }
 
@@ -50,7 +50,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> !t.startsWith(parameter));
     }
 
-    public F notStartsWith(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F notStartsWith(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.startsWith(parameterProviderBuilder.data(s)));
     }
 
@@ -58,7 +58,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.endsWith(parameter));
     }
 
-    public F endsWith(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F endsWith(final ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.endsWith(parameterProviderBuilder.data(s)));
     }
 
@@ -66,7 +66,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> !t.endsWith(parameter));
     }
 
-    public F notEnds(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F notEnds(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.endsWith(parameterProviderBuilder.data(s)));
     }
 
@@ -74,7 +74,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.contains(parameter));
     }
 
-    public F contains(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F contains(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.contains(parameterProviderBuilder.data(s)));
     }
 
@@ -82,7 +82,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> !t.contains(parameter));
     }
 
-    public F notContains(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F notContains(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.contains(parameterProviderBuilder.data(s)));
     }
 
@@ -90,7 +90,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.matches(parameter));
     }
 
-    public F matches(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F matches(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.matches(parameterProviderBuilder.data(s)));
     }
 
@@ -98,7 +98,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> !t.matches(parameter));
     }
 
-    public F notMatches(ProviderBuilder<?, String, ?> parameterProviderBuilder) {
+    public F notMatches(ProviderBuilder<String, ?> parameterProviderBuilder) {
         return addRule((t, s) -> !t.matches(parameterProviderBuilder.data(s)));
     }
 
@@ -106,7 +106,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.length() == parameter);
     }
 
-    public F length(ProviderBuilder<?, Integer, ?> parameterProviderBuilder) {
+    public F length(ProviderBuilder<Integer, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.length() == parameterProviderBuilder.data(s));
     }
 
@@ -114,7 +114,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.length() >= parameter);
     }
 
-    public F minLength(ProviderBuilder<?, Integer, ?> parameterProviderBuilder) {
+    public F minLength(ProviderBuilder<Integer, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.length() >= parameterProviderBuilder.data(s));
     }
 
@@ -122,7 +122,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
         return addRule(t -> t.length() <= parameter);
     }
 
-    public F maxLength(ProviderBuilder<?, Integer, ?> parameterProviderBuilder) {
+    public F maxLength(ProviderBuilder<Integer, ?> parameterProviderBuilder) {
         return addRule((t, s) -> t.length() <= parameterProviderBuilder.data(s));
     }
 
