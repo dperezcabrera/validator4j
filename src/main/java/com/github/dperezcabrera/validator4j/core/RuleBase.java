@@ -16,6 +16,8 @@
  */
 package com.github.dperezcabrera.validator4j.core;
 
+import java.util.function.BiPredicate;
+
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
@@ -23,9 +25,9 @@ package com.github.dperezcabrera.validator4j.core;
  */
 public class RuleBase<T> implements Rule<T> {
 
-    private SelectorPredicate<T, Selector> predicate;
+    private BiPredicate<T, Selector> predicate;
 
-    public RuleBase(SelectorPredicate<T, Selector> predicate) {
+    public RuleBase(BiPredicate<T, Selector> predicate) {
         this.predicate = predicate;
     }
 

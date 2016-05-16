@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.validator;
+package com.github.dperezcabrera.validator4j.core;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
 @FunctionalInterface
-public interface ParameterRuleBuilder<T> {
+public interface ParametrizedRuleBuilder<T> {
 
-    public ParameterRules<T> build();
+    public ParametrizedRules<T> build();
 }

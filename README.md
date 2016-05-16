@@ -16,14 +16,15 @@ The Simple Validator for Java is a software library that provides a very simple 
         stringRule("id").mustBeNull(),
         cmpRule("children").notNull().range(2, 4),
         stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
-        dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
+        dateRule("birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
         dateRule("activationDate").notNull(),
-        dateRule("deactivationDate").after(date("activated").add(3, MONTH))
+        dateRule("deactivationDate").after(date("activated").add(MONTH, 3))
     );
 ```
 
 ## Basic validation
 ```java
+
     String name = "Sr. John Doe";
     String id = null;
     String email = "john.doe@example.com";
@@ -41,6 +42,7 @@ The Simple Validator for Java is a software library that provides a very simple 
 
 ## Obtaining a valid beans from Selector
 ```java
+
     String name = "Sr. John Doe";
     String id = null;
     String email = "john.doe@example.com";
@@ -67,10 +69,10 @@ The Simple Validator for Java is a software library that provides a very simple 
     Validator obtainUserValidator = rules(
         cmpRule("user.id").notNull().greatherThan(0L),
         stringRule("user.name").notNull().notEmpty(),
-        stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
-        dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
-        dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(1, DATE)),
-        dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(1, DATE)),
+        stringRule("user.email").notIn("admin@example.com", "pepe@example.com").matches(EMAIL_PATTERN),
+        dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
+        dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
+        dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
         objectRule("user.address").notNull(),
         cmpRule("user.address.id").notNull(),
         stringRule("user.address.address0").notNull().notEmpty().maxLength(24),
@@ -93,6 +95,53 @@ The Simple Validator for Java is a software library that provides a very simple 
     assertEquals(expectedResult, result);
 ```
 
+## Including rules from other validators
+```java
+
+    Long userId = ...;
+    Validator countryValidator = rules(
+        cmpRule("c.id").notNull().greatherThan(0L),
+        stringRule("c.name").notNull().minLength(3).maxLength(12),
+        stringRule("c.language").notNull().minLength(4)
+    );
+
+    Validator addressValidator = rules(
+        cmpRule("address.id").notNull().lessThan(1000L),
+        stringRule("address.address0").notNull().maxLength(24),
+        stringRule("address.address1").notNull().maxLength(24),
+        stringRule("address.city").notNull().minLength(2).maxLength(24),
+        stringRule("address.region").notNull().minLength(2).maxLength(24),
+        stringRule("address.zipCode").notNull().minLength(4).maxLength(8),
+        objectRule("address.country").notNull())
+    .include(countryValidator, "address.country", "c");
+
+    Validator otherValidator = rules(
+        stringRule("namePrefix").notNull().maxLength(24),
+        stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
+        stringRule("nameContains").notNull().maxLength(integer("nameLength")),
+        objectRule("nameLength").notNull()
+    );
+
+    Validator obtainUserValidator = rules(
+        cmpRule("user.id").notNull().greatherThan(0L),
+        stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(integer("nameLength")),
+        stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+        dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
+        dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
+        dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+        objectRule("user.address").notNull())
+    .include(addressValidator, "user")
+    .include(otherValidator);
+
+    Integer nameLength = 4;
+
+    String namePrefix = "J";
+    String nameSufix = "n";
+    String nameContains = "ohn";
+
+    obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
+
+```
 
 ## Maven install
 ```shell

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -54,8 +55,21 @@ public class ErrorManagerBase implements ErrorManager {
     public void check() {
         if (errors != null){
             StringBuilder sb = new StringBuilder();
-            // FIXME: create a esception message
-            throw  new ValidatorException(sb.toString(), errors);
+            sb.append("Errors:\n");
+            for (Entry<String, List<String>> e : errors.entrySet()) {
+                sb.append("\t- attribute '");
+                sb.append(e.getKey());
+                sb.append("' (");
+                sb.append(e.getValue().size());
+                sb.append(")\n:");
+                for (String msg: e.getValue()) {
+                    sb.append("\t\t* ");
+                    sb.append(msg);
+                    sb.append("\n");
+                }
+                sb.append("\n");
+            }
+            throw new ValidatorException(sb.toString(), errors);
         }
     }
 }

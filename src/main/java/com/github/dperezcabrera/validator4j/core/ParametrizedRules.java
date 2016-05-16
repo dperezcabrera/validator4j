@@ -14,11 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.validator;
+package com.github.dperezcabrera.validator4j.core;
 
-import com.github.dperezcabrera.validator4j.core.Selector;
-import com.github.dperezcabrera.validator4j.core.ErrorManager;
-import com.github.dperezcabrera.validator4j.core.Rule;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +24,7 @@ import java.util.List;
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  * @param <T>
  */
-public class ParameterRules<T> {
+public class ParametrizedRules<T> {
 
     public enum NullConstraint {
 
@@ -41,7 +38,7 @@ public class ParameterRules<T> {
     private List<Rule<T>> rules = null;
     private Class<T> type;
     
-    public ParameterRules(String name, Class<T> type) {
+    public ParametrizedRules(String name, Class<T> type) {
         this.name = name;
         this.type = type;
     }
@@ -73,12 +70,12 @@ public class ParameterRules<T> {
         T value = selector.select(name, type);
         if (value != null) {
             if (nullConstraint == NullConstraint.NULL) {
-                errorManager.addErrorMessage(name, "");
+                errorManager.addErrorMessage(name, "Object named '"+ name+"' must be 'null' but It was not.");
             } else if (rules != null) {
                 rules.stream().forEach(rule -> rule.validate(value, name, selector, errorManager));
             }
         } else if (nullConstraint == NullConstraint.NOT_NULL) {
-            errorManager.addErrorMessage(name, "");
+            errorManager.addErrorMessage(name,"Object named '"+ name+"' was 'null' and It must be not 'null'.");
         }
     }
 }

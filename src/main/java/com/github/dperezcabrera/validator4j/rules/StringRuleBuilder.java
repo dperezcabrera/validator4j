@@ -16,8 +16,8 @@
  */
 package com.github.dperezcabrera.validator4j.rules;
 
+import com.github.dperezcabrera.validator4j.core.ParametrizedRules;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
-import com.github.dperezcabrera.validator4j.validator.ParameterRules;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.github.dperezcabrera.validator4j.validator.ParameterRules;
  */
 public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends ComparableRuleBuilder<String, F> {
 
-    protected StringRuleBuilder(ParameterRules<String> parameterRule) {
+    protected StringRuleBuilder(ParametrizedRules<String> parameterRule) {
         super(parameterRule);
     }
 
@@ -128,12 +128,12 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
 
     public static final class StringRuleBuilderBase extends StringRuleBuilder<StringRuleBuilderBase> {
 
-        private StringRuleBuilderBase(ParameterRules<String> parameterRule) {
+        private StringRuleBuilderBase(ParametrizedRules<String> parameterRule) {
             super(parameterRule);
         }
     }
 
     public static StringRuleBuilderBase stringRule(String name) {
-        return new StringRuleBuilderBase(new ParameterRules<>(name, String.class));
+        return new StringRuleBuilderBase(new ParametrizedRules<>(name, String.class));
     }
 }

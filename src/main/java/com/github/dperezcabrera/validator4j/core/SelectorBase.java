@@ -18,6 +18,7 @@ package com.github.dperezcabrera.validator4j.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -32,7 +33,7 @@ public class SelectorBase implements Selector {
 
     public SelectorBase(Map<String, Integer> indexes, Object[] objects) {
         this.indexes = indexes;
-        this.objects = objects;
+        this.objects = Arrays.copyOf(objects, objects.length);
     }
 
     @Override
@@ -40,20 +41,18 @@ public class SelectorBase implements Selector {
         String[] attributePath = name.split("\\.");
         Integer index = indexes.get(attributePath[0]);
         if (index == null) {
-            // TODO: add message
-            throw new ConfigurationValidatorException("");
+            throw new ConfigurationValidatorException("Unknown bean identified by '"+name+"'");
         } else if (index < 0 || index >= objects.length) {
-            // TODO: add message
-            throw new ConfigurationValidatorException("");
+            throw new ConfigurationValidatorException("Unknown bean identified by '"+name+"', perhaps wrong order in the call to check beans.");
         } else {
             return (T) get(attributePath, index, objects[index]);
         }
     }
 
     private Object get(String[] keys, int index, Object o) {
+        int i = index + 1;
         try {
             Object temp = o;
-            int i = index + 1;
             while (temp != null && i < keys.length) {
                 String methodName = getMethodName(keys[i++]);
                 Method method = temp.getClass().getMethod(methodName);
@@ -61,8 +60,7 @@ public class SelectorBase implements Selector {
             }
             return temp;
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            // TODO: add message
-            throw new ConfigurationValidatorException("", ex);
+            throw new ConfigurationValidatorException("Error trying to get a property, '"+keys[i]+"' was not found in the object named: '"+keys[i-1]+"' ", ex);
         }
     }
 

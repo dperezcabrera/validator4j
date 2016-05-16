@@ -14,16 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.validator;
+package com.github.dperezcabrera.validator4j.rules;
 
-import java.util.Arrays;
-import java.util.Collection;
+import com.github.dperezcabrera.validator4j.core.ParametrizedRules;
 import com.github.dperezcabrera.validator4j.core.Rule;
 import com.github.dperezcabrera.validator4j.core.RuleBase;
 import com.github.dperezcabrera.validator4j.core.Selector;
-import com.github.dperezcabrera.validator4j.core.SelectorPredicate;
+import com.github.dperezcabrera.validator4j.core.ParametrizedRules.NullConstraint;
+import com.github.dperezcabrera.validator4j.core.ParametrizedRuleBuilder;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
-import com.github.dperezcabrera.validator4j.validator.ParameterRules.NullConstraint;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 /**
@@ -32,11 +34,11 @@ import java.util.function.Predicate;
  * @param <T>
  * @param <F>
  */
-public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F>> implements ParameterRuleBuilder<T> {
+public class ParametrizedRuleBuilderBase<T, F extends ParametrizedRuleBuilderBase<T, F>> implements ParametrizedRuleBuilder<T> {
 
-    private ParameterRules<T> parameterRule;
+    private ParametrizedRules<T> parameterRule;
 
-    public ParameterRuleBuilderBase(ParameterRules<T> parameterRule) {
+    public ParametrizedRuleBuilderBase(ParametrizedRules<T> parameterRule) {
         this.parameterRule = parameterRule;
     }
 
@@ -45,7 +47,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return (F) this;
     }
 
-    public final F addRule(SelectorPredicate<T, Selector> predicate) {
+    public final F addRule(BiPredicate<T, Selector> predicate) {
         return addRule(new RuleBase<>(predicate));
     }
 
@@ -66,7 +68,7 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
         return setNullConstraint(NullConstraint.NULLABLE);
     }
 
-    public ParameterRuleBuilder<T> mustBeNull() {
+    public ParametrizedRuleBuilder<T> mustBeNull() {
         return setNullConstraint(NullConstraint.NULL);
     }
 
@@ -103,14 +105,14 @@ public class ParameterRuleBuilderBase<T, F extends ParameterRuleBuilderBase<T, F
     }
 
     @Override
-    public ParameterRules<T> build() {
+    public ParametrizedRules<T> build() {
         if (parameterRule.getNullConstraint() == null) {
             nullable();
         }
         return parameterRule;
     }
     
-    public static <F extends ParameterRuleBuilderBase<Object, F>> ParameterRuleBuilderBase<Object, F> objectRule(String name) {
-        return new ParameterRuleBuilderBase<>(new ParameterRules<>(name, Object.class));
+    public static <F extends ParametrizedRuleBuilderBase<Object, F>> ParametrizedRuleBuilderBase<Object, F> objectRule(String name) {
+        return new ParametrizedRuleBuilderBase<>(new ParametrizedRules<>(name, Object.class));
     }
 }

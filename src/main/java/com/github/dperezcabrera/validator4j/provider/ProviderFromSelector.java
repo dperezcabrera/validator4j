@@ -35,6 +35,6 @@ public class ProviderFromSelector<T> implements Provider<T> {
 
     @Override
     public T data(Selector selector) {
-        return selector.select(name, type);
+        return  selector.select(name, type);
     }
 }

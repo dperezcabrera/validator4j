@@ -14,30 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.validator;
+package com.github.dperezcabrera.validator4j;
 
-import static com.github.dperezcabrera.validator4j.rules.CalendarRuleBuilder.dateRule;
-import static com.github.dperezcabrera.validator4j.rules.ComparableRuleBuilder.cmpRule;
-import static com.github.dperezcabrera.validator4j.rules.StringRuleBuilder.stringRule;
 import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.core.ValidatorException;
-import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.now;
 import java.util.Calendar;
-import org.apache.commons.lang3.time.DateUtils;
-import static java.util.Calendar.DATE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
-import static com.github.dperezcabrera.validator4j.validator.Validator.*;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.date;
-import static com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.integer;
-import static com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.stringFrom;
-import static com.github.dperezcabrera.validator4j.validator.ParameterRuleBuilderBase.objectRule;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.*;
+import static com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.*;
+import static com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.*;
+import static com.github.dperezcabrera.validator4j.rules.ParametrizedRuleBuilderBase.*;
+import static com.github.dperezcabrera.validator4j.rules.StringRuleBuilder.*;
+import static com.github.dperezcabrera.validator4j.Validator.*;
+import static com.github.dperezcabrera.validator4j.rules.CalendarRuleBuilder.dateRule;
+import static java.util.Calendar.DATE;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -130,6 +128,57 @@ public class ValidatorTest {
                 stringRule("nameContains").notNull().maxLength(integer("nameLength")),
                 objectRule("nameLength").notNull()
         );
+        User expectedResult = userRepository.findOne(userId);
+        Integer nameLength = expectedResult.getName().length();
+
+        String namePrefix = "J";
+        String nameSufix = "n";
+        String nameContains = "ohn";
+
+        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
+
+        User result = selector.select("user", User.class);
+
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    public void integrationComplexTestIncludeOk() {
+        UserRepository userRepository = new UserRepository();
+        Long userId = 1L;
+        Validator countryValidator = rules(
+                cmpRule("c.id").notNull().greatherThan(0L),
+                stringRule("c.name").notNull().minLength(3).maxLength(12),
+                stringRule("c.language").notNull().minLength(4)
+        );
+
+        Validator addressValidator = rules(
+                cmpRule("address.id").notNull().lessThan(1000L),
+                stringRule("address.address0").notNull().maxLength(24),
+                stringRule("address.address1").notNull().maxLength(24),
+                stringRule("address.city").notNull().minLength(2).maxLength(24),
+                stringRule("address.region").notNull().minLength(2).maxLength(24),
+                stringRule("address.zipCode").notNull().minLength(4).maxLength(8),
+                objectRule("address.country").notNull()
+        ).include(countryValidator, "address.country", "c");
+
+        Validator otherValidator = rules(
+                stringRule("namePrefix").notNull().maxLength(24),
+                stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
+                stringRule("nameContains").notNull().maxLength(integer("nameLength")),
+                objectRule("nameLength").notNull()
+        );
+
+        Validator obtainUserValidator = rules(
+                cmpRule("user.id").notNull().greatherThan(0L),
+                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(integer("nameLength")),
+                stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+                dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
+                dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
+                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+                objectRule("user.address").notNull()
+        ).include(addressValidator, "user").include(otherValidator);
+
         User expectedResult = userRepository.findOne(userId);
         Integer nameLength = expectedResult.getName().length();
 

@@ -17,18 +17,17 @@
 package com.github.dperezcabrera.validator4j.rules;
 
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
+import com.github.dperezcabrera.validator4j.core.ParametrizedRules;
 import java.util.Calendar;
-import com.github.dperezcabrera.validator4j.validator.ParameterRuleBuilderBase;
-import com.github.dperezcabrera.validator4j.validator.ParameterRules;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  * @param <F>
  */
-public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends ParameterRuleBuilderBase<Calendar, F> {
+public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends ParametrizedRuleBuilderBase<Calendar, F> {
 
-    protected CalendarRuleBuilder(ParameterRules<Calendar> parameterRule) {
+    protected CalendarRuleBuilder(ParametrizedRules<Calendar> parameterRule) {
         super(parameterRule);
     }
 
@@ -50,12 +49,12 @@ public class CalendarRuleBuilder<F extends CalendarRuleBuilder<F>> extends Param
 
     public static final class CalendarRuleBuilderBase extends CalendarRuleBuilder<CalendarRuleBuilderBase> {
 
-        private CalendarRuleBuilderBase(ParameterRules<Calendar> parameterRule) {
+        private CalendarRuleBuilderBase(ParametrizedRules<Calendar> parameterRule) {
             super(parameterRule);
         }
     }
 
     public static CalendarRuleBuilderBase dateRule(String name) {
-        return new CalendarRuleBuilderBase(new ParameterRules<>(name, Calendar.class));
+        return new CalendarRuleBuilderBase(new ParametrizedRules<>(name, Calendar.class));
     }
 }

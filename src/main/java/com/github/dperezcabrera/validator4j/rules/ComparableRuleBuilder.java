@@ -16,9 +16,8 @@
  */
 package com.github.dperezcabrera.validator4j.rules;
 
+import com.github.dperezcabrera.validator4j.core.ParametrizedRules;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
-import com.github.dperezcabrera.validator4j.validator.ParameterRuleBuilderBase;
-import com.github.dperezcabrera.validator4j.validator.ParameterRules;
 
 /**
  *
@@ -26,9 +25,9 @@ import com.github.dperezcabrera.validator4j.validator.ParameterRules;
  * @param <T>
  * @param <F>
  */
-public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRuleBuilder<T, F>> extends ParameterRuleBuilderBase<T, F> {
+public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRuleBuilder<T, F>> extends ParametrizedRuleBuilderBase<T, F> {
 
-    protected ComparableRuleBuilder(ParameterRules<T> attributeRule) {
+    protected ComparableRuleBuilder(ParametrizedRules<T> attributeRule) {
         super(attributeRule);
     }
 
@@ -86,12 +85,12 @@ public class ComparableRuleBuilder<T extends Comparable, F extends ComparableRul
 
     public static final class ComparableRuleBuilderBase extends ComparableRuleBuilder<Comparable, ComparableRuleBuilderBase> {
 
-        private ComparableRuleBuilderBase(ParameterRules<Comparable> parameterRule) {
+        private ComparableRuleBuilderBase(ParametrizedRules<Comparable> parameterRule) {
             super(parameterRule);
         }
     }
 
     public static ComparableRuleBuilderBase cmpRule(String name) {
-        return new ComparableRuleBuilderBase(new ParameterRules<>(name, Comparable.class));
+        return new ComparableRuleBuilderBase(new ParametrizedRules<>(name, Comparable.class));
     }
 }
