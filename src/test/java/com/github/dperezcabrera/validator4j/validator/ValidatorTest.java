@@ -214,9 +214,6 @@ public class ValidatorTest {
         private Calendar lastAccessDate;
         private Address address;
 
-        public User() {
-        }
-
         public String getName() {
             return name;
         }

@@ -24,12 +24,10 @@ import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
 import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
-import static javafx.scene.input.KeyCode.B;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
- * @param <B>
  * @param <F>
  */
 public class StringProviderBuilder<F extends StringProviderBuilder<F>> extends ProviderBuilder<String, F> {
