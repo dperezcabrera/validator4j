@@ -22,6 +22,7 @@ import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
 import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderFactory;
+import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -72,8 +73,16 @@ public class StringProviderBuilder<F extends StringProviderBuilder<F>> extends P
         return addFunction((t, s) -> String.join("", t, providerBuilder.data(s)));
     }
 
-    public IntegerProviderBuilder toInt() {
+    public IntegerProviderBuilder toInteger() {
         return addFunction(t ->  Integer.valueOf(t), new IntegerProviderBuilderFactory());
+    }
+    
+    public LongProviderBuilder toLong() {
+        return addFunction(t ->  Long.valueOf(t), new LongProviderBuilderFactory());
+    }
+    
+    public IntegerProviderBuilder length() {
+        return addFunction(t ->  t.length(), new IntegerProviderBuilderFactory());
     }
         
     public static final class StringProviderBuilderBase extends StringProviderBuilder<StringProviderBuilderBase> {

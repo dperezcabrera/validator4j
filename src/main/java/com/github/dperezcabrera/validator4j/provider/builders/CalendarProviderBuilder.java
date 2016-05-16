@@ -43,19 +43,19 @@ public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> exten
         super(provider, functions);
     }
 
-    public F add(int amount, int field) {
+    public F add(int field, int amount) {
         return addFunctionConsumer(t -> t.add(field, amount));
     }
 
-    public F add(ProviderBuilder<Integer, ?> amountProviderBuilder, int field) {
+    public F add(int field, ProviderBuilder<Integer, ?> amountProviderBuilder) {
         return addFunctionConsumer((t, s) -> t.add(field, amountProviderBuilder.data(s)));
     }
 
-    public F sub(int amount, int field) {
+    public F sub(int field, int amount) {
         return addFunctionConsumer(t -> t.add(field, -amount));
     }
 
-    public F sub(ProviderBuilder<Integer, ?> amountProviderBuilder, int field) {
+    public F sub(int field, ProviderBuilder<Integer, ?> amountProviderBuilder) {
         return addFunctionConsumer((t, s) -> t.add(field, -amountProviderBuilder.data(s)));
     }
 
@@ -71,6 +71,38 @@ public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> exten
         return addFunction(t -> DateUtils.round(t, field));
     }
 
+    public LongProviderBuilder timeInMillisecond() {
+        return addFunction(t ->  t.getTimeInMillis(), new LongProviderBuilder.LongProviderBuilderFactory());
+    }
+
+    public IntegerProviderBuilder year() {
+        return addFunction(t ->  t.get(Calendar.YEAR), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public IntegerProviderBuilder month() {
+        return addFunction(t ->  t.get(Calendar.MONTH), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public IntegerProviderBuilder dayOfMonth() {
+        return addFunction(t ->  t.get(Calendar.DAY_OF_MONTH), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public IntegerProviderBuilder dayOfWeek() {
+        return addFunction(t ->  t.get(Calendar.DAY_OF_WEEK), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public IntegerProviderBuilder field(int field) {
+        return addFunction(t ->  t.get(field), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public F set(int field, int value) {
+        return addFunctionConsumer(t -> t.set(field, value));
+    }
+
+    public F set(int field, ProviderBuilder<Integer, ?> valueProviderBuilder) {
+        return addFunctionConsumer((t, s) -> t.set(field, valueProviderBuilder.data(s)));
+    }
+    
     protected F copy() {
         return addFunction(t -> (Calendar) t.clone());
     }

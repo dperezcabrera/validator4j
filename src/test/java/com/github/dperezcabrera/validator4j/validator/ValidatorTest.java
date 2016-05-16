@@ -53,9 +53,9 @@ public class ValidatorTest {
             stringRule("name").notNull().startsWith("na").contains("am").endsWith("me"),
             cmpRule("child").notNull().range(2, 5),
             stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
-            dateRule("birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
+            dateRule("birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
             dateRule("activationDate").notNull(),
-            dateRule("deactivatedDate").after(date("activationDate").add(3, MONTH))
+            dateRule("deactivatedDate").after(date("activationDate").add(MONTH, 3))
     );
 
     @Rule
@@ -109,11 +109,11 @@ public class ValidatorTest {
 
         Validator obtainUserValidator = rules(
                 cmpRule("user.id").notNull().greatherThan(0L),
-                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).length(integer("nameLength")),
+                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(integer("nameLength")),
                 stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
-                dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(18, YEAR)),
-                dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(1, DATE)),
-                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(1, DATE)),
+                dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
+                dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
+                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
                 objectRule("user.address").notNull(),
                 cmpRule("user.address.id").notNull().lessThan(1000L),
                 stringRule("user.address.address0").notNull().maxLength(24),
@@ -126,7 +126,8 @@ public class ValidatorTest {
                 stringRule("user.address.country.name").notNull().minLength(3).maxLength(12),
                 stringRule("user.address.country.language").notNull().minLength(4),
                 stringRule("namePrefix").notNull().maxLength(24),
-                stringRule("nameSufix").notNull().maxLength(integer(3).mult(integer("nameLength")).add(1).div(2).remain(10)),
+                stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
+                stringRule("nameContains").notNull().maxLength(integer("nameLength")),
                 objectRule("nameLength").notNull()
         );
         User expectedResult = userRepository.findOne(userId);
@@ -134,8 +135,9 @@ public class ValidatorTest {
 
         String namePrefix = "J";
         String nameSufix = "n";
+        String nameContains = "ohn";
 
-        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameLength);
+        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
 
         User result = selector.select("user", User.class);
 

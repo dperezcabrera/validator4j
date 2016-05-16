@@ -38,10 +38,14 @@ public class IntegerProviderBuilder extends NumberProviderBuilder<Integer, Integ
     public IntegerProviderBuilder(IntegerOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(operator, provider, functions);
     }
+    
+    public LongProviderBuilder toLong() {
+        return addFunction(t ->  t.longValue(), new LongProviderBuilder.LongProviderBuilderFactory());
+    }
 
     public static class IntegerOperator implements NumberProviderBuilder.Operator<Integer> {
 
-        public static IntegerOperator INSTANCE = new IntegerOperator();
+        public static final IntegerOperator INSTANCE = new IntegerOperator();
 
         protected IntegerOperator() {
         }

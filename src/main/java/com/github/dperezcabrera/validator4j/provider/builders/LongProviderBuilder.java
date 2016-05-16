@@ -39,9 +39,13 @@ public class LongProviderBuilder extends NumberProviderBuilder<Long, LongOperato
         super(operator, provider, functions);
     }
 
+    public IntegerProviderBuilder toInteger() {
+        return addFunction(t ->  t.intValue(), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
     public static class LongOperator implements NumberProviderBuilder.Operator<Long> {
 
-        public static LongOperator INSTANCE = new LongOperator();
+        public static final LongOperator INSTANCE = new LongOperator();
 
         protected LongOperator() {
         }
