@@ -14,16 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j;
-
-import com.github.dperezcabrera.validator4j.core.Selector;
+package com.github.dperezcabrera.validator4j.util;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-@FunctionalInterface
-public interface Validator {
+public final class Utility {
 
-    public Selector validate(Object... elements);
+    private Utility() {
+    }
+
+    public static <T> T checkNotNull(T obj) {
+        if (obj == null) {
+            throw new NullPointerException();
+        }
+        return obj;
+    }
 }

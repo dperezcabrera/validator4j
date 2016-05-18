@@ -31,7 +31,7 @@ import static com.github.dperezcabrera.validator4j.provider.builders.IntegerProv
 import static com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.*;
 import static com.github.dperezcabrera.validator4j.rules.ParametrizedRuleBuilderBase.*;
 import static com.github.dperezcabrera.validator4j.rules.StringRuleBuilder.*;
-import static com.github.dperezcabrera.validator4j.Validator.*;
+import static com.github.dperezcabrera.validator4j.ValidatorBuilder.*;
 import static com.github.dperezcabrera.validator4j.rules.CalendarRuleBuilder.dateRule;
 import static java.util.Calendar.DATE;
 import static java.util.Calendar.MONTH;
@@ -46,15 +46,14 @@ public class ValidatorTest {
 
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-    private Validator createUserValidator = rules(
-            stringRule("id").mustBeNull(),
+    private Validator createUserValidator = rules(stringRule("id").mustBeNull(),
             stringRule("name").notNull().startsWith("na").contains("am").endsWith("me"),
             cmpRule("child").notNull().range(2, 5),
             stringRule("email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
             dateRule("birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
             dateRule("activationDate").notNull(),
-            dateRule("deactivatedDate").after(date("activationDate").add(MONTH, 3))
-    );
+            dateRule("deactivatedDate").after(getCalendar("activationDate").add(MONTH, 3))
+    ).build();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -73,7 +72,7 @@ public class ValidatorTest {
         deactivationDate.add(MONTH, 3);
         int child = 3;
 
-        Selector selector = createUserValidator.check(id, name, child, get(email), get(birthay.clone()), activationDate, deactivationDate);
+        Selector selector = createUserValidator.validate(id, name, child, email, birthay, activationDate, deactivationDate);
         String resultEmail = selector.select("email", String.class);
         Calendar resultBirthay = selector.select("birthay", Calendar.class);
 
@@ -97,7 +96,7 @@ public class ValidatorTest {
 
         thrown.expect(ValidatorException.class);
 
-        createUserValidator.check(id, get(name), child, get(email), get(birthay), get(activationDate), get(deactivationDate));
+        createUserValidator.validate(id, name, child, email, birthay, activationDate, deactivationDate);
     }
 
     @Test
@@ -105,13 +104,12 @@ public class ValidatorTest {
         UserRepository userRepository = new UserRepository();
         Long userId = 1L;
 
-        Validator obtainUserValidator = rules(
-                cmpRule("user.id").notNull().greatherThan(0L),
-                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(integer("nameLength")),
+        Validator obtainUserValidator = rules(cmpRule("user.id").notNull().greatherThan(0L),
+                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(getInteger("nameLength")),
                 stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
                 dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
                 dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
-                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+                dateRule("user.lastAccessDate").notNull().after(getCalendar("user.signUpDate").truncate(DATE).sub(DATE, 1)),
                 objectRule("user.address").notNull(),
                 cmpRule("user.address.id").notNull().lessThan(1000L),
                 stringRule("user.address.address0").notNull().maxLength(24),
@@ -124,10 +122,10 @@ public class ValidatorTest {
                 stringRule("user.address.country.name").notNull().minLength(3).maxLength(12),
                 stringRule("user.address.country.language").notNull().minLength(4),
                 stringRule("namePrefix").notNull().maxLength(24),
-                stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
-                stringRule("nameContains").notNull().maxLength(integer("nameLength")),
+                stringRule("nameSufix").notNull().maxLength(getInteger("nameLength")),
+                stringRule("nameContains").notNull().maxLength(getInteger("nameLength")),
                 objectRule("nameLength").notNull()
-        );
+        ).build();
         User expectedResult = userRepository.findOne(userId);
         Integer nameLength = expectedResult.getName().length();
 
@@ -135,7 +133,7 @@ public class ValidatorTest {
         String nameSufix = "n";
         String nameContains = "ohn";
 
-        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
+        Selector selector = obtainUserValidator.validate(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
 
         User result = selector.select("user", User.class);
 
@@ -150,7 +148,7 @@ public class ValidatorTest {
                 cmpRule("c.id").notNull().greatherThan(0L),
                 stringRule("c.name").notNull().minLength(3).maxLength(12),
                 stringRule("c.language").notNull().minLength(4)
-        );
+        ).build();
 
         Validator addressValidator = rules(
                 cmpRule("address.id").notNull().lessThan(1000L),
@@ -160,24 +158,22 @@ public class ValidatorTest {
                 stringRule("address.region").notNull().minLength(2).maxLength(24),
                 stringRule("address.zipCode").notNull().minLength(4).maxLength(8),
                 objectRule("address.country").notNull()
-        ).include(countryValidator, "address.country", "c");
+        ).include(countryValidator, "address.country", "c").build();
 
-        Validator otherValidator = rules(
-                stringRule("namePrefix").notNull().maxLength(24),
-                stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
-                stringRule("nameContains").notNull().maxLength(integer("nameLength")),
+        Validator otherValidator = rules(stringRule("namePrefix").notNull().maxLength(24),
+                stringRule("nameSufix").notNull().maxLength(getInteger("nameLength")),
+                stringRule("nameContains").notNull().minLength(getInteger("nameLength").div(string("5").toLong().toInteger().add(getInteger("nameLength")).remain(now().dayOfMonth()))),
                 objectRule("nameLength").notNull()
-        );
+        ).build();
 
-        Validator obtainUserValidator = rules(
-                cmpRule("user.id").notNull().greatherThan(0L),
-                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(integer("nameLength")),
+        Validator obtainUserValidator = rules(cmpRule("user.id").notNull().greatherThan(0L),
+                stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(getInteger("nameLength")),
                 stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
                 dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
                 dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
-                dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+                dateRule("user.lastAccessDate").notNull().after(getCalendar("user.signUpDate").truncate(DATE).sub(DATE, 1)),
                 objectRule("user.address").notNull()
-        ).include(addressValidator, "user").include(otherValidator);
+        ).include(addressValidator, "user").include(otherValidator).build();
 
         User expectedResult = userRepository.findOne(userId);
         Integer nameLength = expectedResult.getName().length();
@@ -186,7 +182,7 @@ public class ValidatorTest {
         String nameSufix = "n";
         String nameContains = "ohn";
 
-        Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
+        Selector selector = obtainUserValidator.validate(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
 
         User result = selector.select("user", User.class);
 

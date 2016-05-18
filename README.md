@@ -19,7 +19,7 @@ The Simple Validator for Java is a software library that provides a very simple 
         dateRule("birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
         dateRule("activationDate").notNull(),
         dateRule("deactivationDate").after(date("activated").add(MONTH, 3))
-    );
+    ).build();
 ```
 
 ## Basic validation
@@ -40,7 +40,7 @@ The Simple Validator for Java is a software library that provides a very simple 
     CREATE_USER_VALIDATOR.check(name, id, children, email, birthay, activationDate, deactivationDate);
 ```
 
-## Obtaining a valid beans from Selector
+## Obtaining a valid bean from Selector
 ```java
 
     String name = "Sr. John Doe";
@@ -84,7 +84,7 @@ The Simple Validator for Java is a software library that provides a very simple 
         cmpRule("user.address.country.id").notNull().greatherThan(0L),
         stringRule("user.address.country.name").notNull().minLength(3).maxLength(12),
         stringRule("user.address.country.language").notNull().minLength(4),
-    );
+    ).build();
 
     User expectedResult = userRepository.findOne(userId);
 
@@ -103,7 +103,7 @@ The Simple Validator for Java is a software library that provides a very simple 
         cmpRule("c.id").notNull().greatherThan(0L),
         stringRule("c.name").notNull().minLength(3).maxLength(12),
         stringRule("c.language").notNull().minLength(4)
-    );
+    ).build();
 
     Validator addressValidator = rules(
         cmpRule("address.id").notNull().lessThan(1000L),
@@ -113,14 +113,14 @@ The Simple Validator for Java is a software library that provides a very simple 
         stringRule("address.region").notNull().minLength(2).maxLength(24),
         stringRule("address.zipCode").notNull().minLength(4).maxLength(8),
         objectRule("address.country").notNull())
-    .include(countryValidator, "address.country", "c");
+    .include(countryValidator, "address.country", "c").build();
 
     Validator otherValidator = rules(
         stringRule("namePrefix").notNull().maxLength(24),
         stringRule("nameSufix").notNull().maxLength(integer("nameLength")),
         stringRule("nameContains").notNull().maxLength(integer("nameLength")),
         objectRule("nameLength").notNull()
-    );
+    ).build();
 
     Validator obtainUserValidator = rules(
         cmpRule("user.id").notNull().greatherThan(0L),
@@ -131,7 +131,8 @@ The Simple Validator for Java is a software library that provides a very simple 
         dateRule("user.lastAccessDate").notNull().after(date("user.signUpDate").truncate(DATE).sub(DATE, 1)),
         objectRule("user.address").notNull())
     .include(addressValidator, "user")
-    .include(otherValidator);
+    .include(otherValidator)
+    .build();
 
     Integer nameLength = 4;
 

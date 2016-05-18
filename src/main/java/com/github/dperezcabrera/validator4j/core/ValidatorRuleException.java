@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,16 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j;
-
-import com.github.dperezcabrera.validator4j.core.Selector;
+package com.github.dperezcabrera.validator4j.core;
 
 /**
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-@FunctionalInterface
-public interface Validator {
+public class ValidatorRuleException extends RuntimeException {
 
-    public Selector validate(Object... elements);
+    private static final long serialVersionUID = 1L;
+
+    public ValidatorRuleException(String message) {
+        super(message);
+    }
+
+    public ValidatorRuleException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
