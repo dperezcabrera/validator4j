@@ -21,7 +21,11 @@ import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
+import com.github.dperezcabrera.validator4j.provider.builders.DoubleProviderBuilder.DoubleProviderBuilderFactory;
+import com.github.dperezcabrera.validator4j.provider.builders.FloatProviderBuilder.FloatProviderBuilderFactory;
 import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerOperator;
+import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongProviderBuilderFactory;
+import com.github.dperezcabrera.validator4j.provider.builders.NumberIntegerProviderBuilder.OperatorInteger;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -29,7 +33,7 @@ import java.util.function.BiFunction;
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-public class IntegerProviderBuilder extends NumberProviderBuilder<Integer, IntegerOperator, IntegerProviderBuilder> {
+public class IntegerProviderBuilder extends NumberIntegerProviderBuilder<Integer, IntegerOperator, IntegerProviderBuilder> {
 
     public IntegerProviderBuilder(IntegerOperator operator, Provider<?> provider) {
         super(operator, provider);
@@ -38,12 +42,8 @@ public class IntegerProviderBuilder extends NumberProviderBuilder<Integer, Integ
     public IntegerProviderBuilder(IntegerOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(operator, provider, functions);
     }
-    
-    public LongProviderBuilder toLong() {
-        return addFunction(t ->  t.longValue(), new LongProviderBuilder.LongProviderBuilderFactory());
-    }
 
-    public static class IntegerOperator implements NumberProviderBuilder.Operator<Integer> {
+    public static class IntegerOperator implements OperatorInteger<Integer> {
 
         public static final IntegerOperator INSTANCE = new IntegerOperator();
 
@@ -76,11 +76,11 @@ public class IntegerProviderBuilder extends NumberProviderBuilder<Integer, Integ
         }
     }
 
-    public static IntegerProviderBuilder integer(String selectorName) {
+    public static IntegerProviderBuilder getInteger(String selectorName) {
         return new IntegerProviderBuilder(IntegerOperator.INSTANCE, new ProviderFromSelector<>(selectorName, Integer.class));
     }
 
-    public static IntegerProviderBuilder integer(Integer value) {
+    public static IntegerProviderBuilder newInteger(Integer value) {
         return new IntegerProviderBuilder(IntegerOperator.INSTANCE, new ProviderBase<>(value));
     }
 

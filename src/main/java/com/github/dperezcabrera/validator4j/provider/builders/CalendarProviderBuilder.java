@@ -21,8 +21,6 @@ import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
-import com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.StringProviderBuilderBase;
-import com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.StringProviderBuilderFactory;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.commons.lang3.time.DateUtils;
@@ -33,7 +31,7 @@ import java.util.function.BiFunction;
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  * @param <F>
  */
-public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> extends ProviderBuilder<Calendar, F> {
+public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> extends ObjectProviderBuilder<Calendar, F> {
 
     protected CalendarProviderBuilder(Provider<?> provider) {
         super(provider);
@@ -107,19 +105,15 @@ public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> exten
         return addFunction(t -> (Calendar) t.clone());
     }
 
-    public StringProviderBuilderBase string() {
-        return addFunction(t -> t.toString(), new StringProviderBuilderFactory());
-    }
-
     public static CalendarProviderBuilderBase now() {
         return new CalendarProviderBuilderBase(new ProviderBase<>(Calendar.getInstance()));
     }
 
-    public static CalendarProviderBuilderBase date(Calendar value) {
+    public static CalendarProviderBuilderBase newCalendar(Calendar value) {
         return new CalendarProviderBuilderBase(new ProviderBase<>((Calendar) value.clone()));
     }
 
-    public static CalendarProviderBuilderBase date(String selectorName) {
+    public static CalendarProviderBuilderBase getCalendar(String selectorName) {
         return new CalendarProviderBuilderBase(new ProviderFromSelector<>(selectorName, Calendar.class)).copy();
     }
 

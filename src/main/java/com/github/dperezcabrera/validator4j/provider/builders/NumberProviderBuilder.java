@@ -20,8 +20,6 @@ import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.builders.NumberProviderBuilder.Operator;
-import com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.StringProviderBuilderBase;
-import com.github.dperezcabrera.validator4j.provider.builders.StringProviderBuilder.StringProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -32,7 +30,7 @@ import java.util.function.BiFunction;
  * @param <O>
  * @param <F>
  */
-public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F extends NumberProviderBuilder<N, O, F>> extends ProviderBuilder<N, F> {
+public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F extends NumberProviderBuilder<N, O, F>> extends ObjectProviderBuilder<N, F> {
 
     private O operator;
 
@@ -49,7 +47,24 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
     protected O getOperator() {
         return operator;
     }
-
+    
+    
+    public IntegerProviderBuilder toInteger() {
+        return addFunction(t ->  t.intValue(), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+    }
+    
+    public LongProviderBuilder toLong() {
+        return addFunction(t ->  t.longValue(), new LongProviderBuilder.LongProviderBuilderFactory());
+    }
+    
+    public DoubleProviderBuilder toDouble() {
+        return addFunction(t ->  t.doubleValue(), new DoubleProviderBuilder.DoubleProviderBuilderFactory());
+    }
+    
+    public FloatProviderBuilder toFloat() {
+        return addFunction(t ->  t.floatValue(), new FloatProviderBuilder.FloatProviderBuilderFactory());
+    }
+    
     public F add(N parameter) {
         return addFunction(t -> operator.add(t, parameter));
     }
@@ -82,18 +97,6 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
         return addFunction((t, s) -> operator.div(t, providerBuilder.data(s)));
     }
 
-    public F remain(N parameter) {
-        return addFunction((t, s) -> operator.remain(t, parameter));
-    }
-
-    public F remain(ProviderBuilder<N, ?> providerBuilder) {
-        return addFunction((t, s) -> operator.remain(t, providerBuilder.data(s)));
-    }
-
-    public StringProviderBuilderBase string() {
-        return addFunction(t -> String.valueOf(t), new StringProviderBuilderFactory());
-    }
-
     public interface Operator<N extends Number> {
 
         N add(N n0, N n1);
@@ -103,7 +106,5 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
         N mult(N n0, N n1);
 
         N div(N n0, N n1);
-
-        N remain(N n0, N n1);
     }
 }

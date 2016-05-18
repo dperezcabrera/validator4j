@@ -22,9 +22,9 @@ import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
 import com.github.dperezcabrera.validator4j.provider.builders.DoubleProviderBuilder.DoubleProviderBuilderFactory;
-import com.github.dperezcabrera.validator4j.provider.builders.FloatProviderBuilder.FloatProviderBuilderFactory;
+import com.github.dperezcabrera.validator4j.provider.builders.FloatProviderBuilder.FloatOperator;
 import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderFactory;
-import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongOperator;
+import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -32,62 +32,57 @@ import java.util.function.BiFunction;
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-public class LongProviderBuilder extends NumberIntegerProviderBuilder<Long, LongOperator, LongProviderBuilder> {
+public class FloatProviderBuilder extends NumberProviderBuilder<Float, FloatOperator, FloatProviderBuilder> {
 
-    public LongProviderBuilder(LongOperator operator, Provider<Long> provider) {
+    public FloatProviderBuilder(FloatOperator operator, Provider<Float> provider) {
         super(operator, provider);
     }
 
-    public LongProviderBuilder(LongOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+    public FloatProviderBuilder(FloatOperator operator, Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
         super(operator, provider, functions);
     }
-    
-    public static class LongOperator implements NumberIntegerProviderBuilder.OperatorInteger<Long> {
 
-        public static final LongOperator INSTANCE = new LongOperator();
+    public static class FloatOperator implements NumberProviderBuilder.Operator<Float> {
 
-        protected LongOperator() {
+        public static final FloatOperator INSTANCE = new FloatOperator();
+
+        protected FloatOperator() {
         }
 
         @Override
-        public Long add(Long n0, Long n1) {
+        public Float add(Float n0, Float n1) {
             return n0 + n1;
         }
 
         @Override
-        public Long sub(Long n0, Long n1) {
+        public Float sub(Float n0, Float n1) {
             return n0 - n1;
         }
 
         @Override
-        public Long mult(Long n0, Long n1) {
+        public Float mult(Float n0, Float n1) {
             return n0 * n1;
         }
 
         @Override
-        public Long div(Long n0, Long n1) {
+        public Float div(Float n0, Float n1) {
             return n0 / n1;
         }
+    }
+
+    public static FloatProviderBuilder getFloat(String selectorName) {
+        return new FloatProviderBuilder(FloatOperator.INSTANCE, new ProviderFromSelector(selectorName, Float.class));
+    }
+
+    public static FloatProviderBuilder newFloat(Float value) {
+        return new FloatProviderBuilder(FloatOperator.INSTANCE, new ProviderBase(value));
+    }
+
+    public static class FloatProviderBuilderFactory implements ProviderBuilderFactory<Float, FloatProviderBuilder> {
 
         @Override
-        public Long remain(Long n0, Long n1) {
-            return n0 % n1;
-        }
-    }
-
-    public static LongProviderBuilder getLong(String selectorName) {
-        return new LongProviderBuilder(LongOperator.INSTANCE, new ProviderFromSelector(selectorName, Long.class));
-    }
-
-    public static LongProviderBuilder newLong(Long value) {
-        return new LongProviderBuilder(LongOperator.INSTANCE, new ProviderBase(value));
-    }
-
-    public static class LongProviderBuilderFactory implements ProviderBuilderFactory<Long, LongProviderBuilder> {
-
-        @Override
-        public ProviderBuilder<Long, LongProviderBuilder> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
-            return new LongProviderBuilder(LongOperator.INSTANCE, provider, functions);
+        public ProviderBuilder<Float, FloatProviderBuilder> build(Provider<?> provider, List<BiFunction<?, Selector, ?>> functions) {
+            return new FloatProviderBuilder(FloatOperator.INSTANCE, provider, functions);
         }
     }
 }
