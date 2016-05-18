@@ -19,7 +19,6 @@ package com.github.dperezcabrera.validator4j.provider.builders;
 import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.Provider;
-import com.github.dperezcabrera.validator4j.provider.builders.NumberProviderBuilder.Operator;
 import com.github.dperezcabrera.validator4j.provider.builders.NumberIntegerProviderBuilder.OperatorInteger;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -49,7 +48,7 @@ public class NumberIntegerProviderBuilder<N extends Number, O extends OperatorIn
         return addFunction((t, s) -> getOperator().remain(t, providerBuilder.data(s)));
     }
 
-    public interface OperatorInteger<N extends Number> extends Operator<N>{
+    public interface OperatorInteger<N extends Number> extends NumberProviderBuilder.Operator<N>{
 
         N remain(N n0, N n1);
     }
