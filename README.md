@@ -144,6 +144,87 @@ The Simple Validator for Java is a software library that provides a very simple 
 
 ```
 
+## Spring-framework integration
+
+### Spring-framework integration: Enable Validator4j
+```java
+
+    @Configuration
+    @EnableValidator4j
+    public class ConfigFoo {
+        
+        @Bean
+        public Foo getFoo() {
+            return new Foo();
+        }
+    }
+```
+
+### Spring-framework integration: Register rules and validators:
+```java
+
+    ValidatorRegistry.register("country_validator",
+            cmpRule("c.id").notNull().greatherThan(0L),
+            stringRule("c.name").notNull().minLength(3).maxLength(12),
+            stringRule("c.language").notNull().minLength(4)
+    );
+
+    ValidatorRegistry.register("address_validator", rules(
+            cmpRule("address.id").notNull().lessThan(1000L),
+            stringRule("address.address0").notNull().maxLength(24),
+            stringRule("address.address1").notNull().maxLength(24),
+            stringRule("address.city").notNull().minLength(2).maxLength(24),
+            stringRule("address.region").notNull().minLength(2).maxLength(24),
+            stringRule("address.zipCode").notNull().minLength(4).maxLength(8),
+            objectRule("address.country").notNull()
+    ).include("country_validator", "address.country", "c"));
+
+    ValidatorRegistry.register("other_validator",
+            stringRule("namePrefix").notNull().maxLength(24),
+            stringRule("nameSufix").notNull().maxLength(getInteger("nameLength")),
+            stringRule("nameContains").notNull().minLength(getInteger("nameLength").div(string("5").toLong().toInteger().add(getInteger("nameLength")).remain(now().dayOfMonth()))),
+            objectRule("nameLength").notNull()
+    );
+
+    ValidatorRegistry.register("user_validator", rules(cmpRule("user.id").notNull().greatherThan(0L),
+            stringRule("user.name").notNull().notEmpty().startsWith(stringFrom("namePrefix")).endsWith(stringFrom("nameSufix")).contains(stringFrom("nameContains")).length(getInteger("nameLength")),
+            stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
+            dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
+            dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
+            dateRule("user.lastAccessDate").notNull().after(getCalendar("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+            objectRule("user.address").notNull()
+    ).include("address_validator", "user").include("other_validator"));
+```
+
+### Spring-framework integration: Configure method validation with annotation
+```java
+
+    public class Foo {
+
+        @ValidateWith("user_validator")
+        public void aMethod(User user, String namePrefix, String nameSufix, String nameContains, int nameLength) {
+            ...
+        }
+        ...
+    }
+```
+
+### Spring-framework integration: Use:
+```java    
+    
+    Long userId = ...;
+
+    User expectedResult = userRepository.findOne(userId);
+    int nameLength = expectedResult.getName().length();
+
+    String namePrefix = "J";
+    String nameSufix = "n";
+    String nameContains = "ohn";
+
+    target.aMethod(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
+```
+
+
 ## Maven install
 ```shell
 mvn clean install
