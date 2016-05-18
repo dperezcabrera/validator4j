@@ -21,10 +21,7 @@ import com.github.dperezcabrera.validator4j.provider.Provider;
 import com.github.dperezcabrera.validator4j.provider.ProviderBase;
 import com.github.dperezcabrera.validator4j.provider.ProviderBuilder;
 import com.github.dperezcabrera.validator4j.provider.ProviderFromSelector;
-import com.github.dperezcabrera.validator4j.provider.builders.DoubleProviderBuilder.DoubleProviderBuilderFactory;
 import com.github.dperezcabrera.validator4j.provider.builders.FloatProviderBuilder.FloatOperator;
-import com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.IntegerProviderBuilderFactory;
-import com.github.dperezcabrera.validator4j.provider.builders.LongProviderBuilder.LongProviderBuilderFactory;
 import java.util.List;
 import java.util.function.BiFunction;
 

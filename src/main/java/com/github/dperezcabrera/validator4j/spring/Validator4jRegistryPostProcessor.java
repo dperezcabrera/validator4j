@@ -17,7 +17,6 @@
 package com.github.dperezcabrera.validator4j.spring;
 
 import org.springframework.aop.config.AopConfigUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -35,12 +34,12 @@ public class Validator4jRegistryPostProcessor implements BeanDefinitionRegistryP
     private static boolean initialized = false;
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         // Do nothing.
     }
 
     @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
         if (!init()) {
             AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
             RootBeanDefinition beanDefinition = new RootBeanDefinition(Validator4jAdvisor.class);
