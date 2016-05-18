@@ -55,7 +55,7 @@ The Simple Validator for Java is a software library that provides a very simple 
     deactivationDate.add(MONTH, 3);
     int children = 3;
 
-    Selector selector = CREATE_USER_VALIDATOR.check(name, id, children, get(email), birthay, activationDate, deactivationDate);
+    Selector selector = CREATE_USER_VALIDATOR.check(name, id, children, email, birthay, activationDate, deactivationDate);
     
     String emailResult = selector.select("email", String.class);
 
@@ -88,7 +88,7 @@ The Simple Validator for Java is a software library that provides a very simple 
 
     User expectedResult = userRepository.findOne(userId);
 
-    Selector selector = obtainUserValidator.check(get(userRepository.findOne(userId)));
+    Selector selector = obtainUserValidator.check(userRepository.findOne(userId));
 
     User result = selector.select("user", User.class);
 
@@ -140,7 +140,7 @@ The Simple Validator for Java is a software library that provides a very simple 
     String nameSufix = "n";
     String nameContains = "ohn";
 
-    obtainUserValidator.check(get(userRepository.findOne(userId)), namePrefix, nameSufix, nameContains, nameLength);
+    obtainUserValidator.check(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
 
 ```
 
