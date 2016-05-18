@@ -40,6 +40,9 @@ import com.github.dperezcabrera.validator4j.ValidatorTest.User;
 import static com.github.dperezcabrera.validator4j.provider.builders.IntegerProviderBuilder.getInteger;
 import static com.github.dperezcabrera.validator4j.provider.builders.CalendarProviderBuilder.getCalendar;
 import static com.github.dperezcabrera.validator4j.ValidatorBuilder.rules;
+import com.github.dperezcabrera.validator4j.core.ValidatorException;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 /**
  *
@@ -50,7 +53,7 @@ import static com.github.dperezcabrera.validator4j.ValidatorBuilder.rules;
 public class SpringTest {
 
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
+    
     private static final Validator COUNTRY_VALIDATOR = ValidatorRegistry.register("country_validator",
             cmpRule("c.id").notNull().greatherThan(0L),
             stringRule("c.name").notNull().minLength(3).maxLength(12),
@@ -79,15 +82,21 @@ public class SpringTest {
             stringRule("user.email").notIn("admin@a.com", "pepe@a.com").matches(EMAIL_PATTERN),
             dateRule("user.birthay").notNull().before(now().ceil(DATE).sub(YEAR, 18)),
             dateRule("user.signUpDate").notNull().before(now().ceil(DATE).add(DATE, 1)),
-            dateRule("user.lastAccessDate").notNull().after(getCalendar("user.signUpDate").truncate(DATE).sub(DATE, 1)),
+            dateRule("user.lastAccessDate").notNull().after(getCalendar("user.signUpDate").truncate(DATE).sub(DATE, 1)).after(string("10").toLong().toInteger().string().concat("/01/200").concatChar('0').toCalendar(string("dd").concat("/MM/yyyy"))),
             objectRule("user.address").notNull()
     ).include(ADDRESS_VALIDATOR, "user").include(OTHER_VALIDATOR));
 
+    
+    
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+   
     @Autowired
     Foo target;
 
     @Test
-    public void integrationComplexTestIncludeOk() {
+    public void springIntegrationOk() {
         ValidatorTest.UserRepository userRepository = new ValidatorTest.UserRepository();
         Long userId = 1L;
 
@@ -97,6 +106,23 @@ public class SpringTest {
         String namePrefix = "J";
         String nameSufix = "n";
         String nameContains = "ohn";
+
+        target.aMethod(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
+    }
+
+    @Test
+    public void springIntegrationFails() {
+        ValidatorTest.UserRepository userRepository = new ValidatorTest.UserRepository();
+        Long userId = 1L;
+
+        User expectedResult = userRepository.findOne(userId);
+        int nameLength = expectedResult.getName().length() + 1;
+
+        String namePrefix = "K";
+        String nameSufix = ".";
+        String nameContains = "ohN";
+
+        thrown.expect(ValidatorException.class);
 
         target.aMethod(userRepository.findOne(userId), namePrefix, nameSufix, nameContains, nameLength);
     }

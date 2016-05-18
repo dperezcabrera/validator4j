@@ -54,6 +54,8 @@ public class ValidatorTest {
             dateRule("activationDate").notNull(),
             dateRule("deactivatedDate").after(getCalendar("activationDate").add(MONTH, 3))
     ).build();
+    
+    
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
