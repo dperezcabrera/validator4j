@@ -1,7 +1,6 @@
 [![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Build Status](https://travis-ci.org/dperezcabrera/validator4j.svg?branch=master)](https://travis-ci.org/dperezcabrera/validator4j)
-[![Coverage Status](https://coveralls.io/repos/github/dperezcabrera/validator4j/badge.svg?branch=master)](https://coveralls.io/github/dperezcabrera/validator4j?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4c0b73fa27ed46b1b45449db8dcfea34)](https://www.codacy.com/app/dperezcabrera/validator4j?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dperezcabrera/validator4j&amp;utm_campaign=Badge_Grade)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.github.dperezcabrera:validator4j)](https://sonarcloud.io/dashboard/index/com.github.dperezcabrera:validator4j)
 [![GitHub issues](https://img.shields.io/github/issues-raw/dperezcabrera/validator4j.svg?maxAge=2592000)](https://github.com/dperezcabrera/validator4j/issues)
 
 
