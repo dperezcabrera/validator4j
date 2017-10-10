@@ -1,23 +1,23 @@
-install:
-- git clone https://github.com/dperezcabrera/validator4j.git
 language: java
+sudo: false
+
 jdk:
 - oraclejdk8
-sudo: false
-script: mvn clean verify
+
+addons:
+  sonarcloud:
+    organization: "dperezcabrera-github"
+    token:
+      secure: ${SONARCLOUD_TOKEN}
+      
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+
 cache:
   directories:
   - "$HOME/.m2"
-after_success:
-- mvn clean test jacoco:report coveralls:jacoco -DTRAVIS_JOB_ID=$TRAVIS_JOB_ID
-
+  - '$HOME/.sonar/cache'
+  
 notifications:
   email:
   - dperezcabrera@gmail.com
-
-env:
-  global:
-    - GIT_DEPENDENCIES=""
-    - GH_USERNAME=dperezcabrera
-    - GH_REPO=dperezcabrera/validator4j
-
