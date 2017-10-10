@@ -73,7 +73,7 @@ public class SpringTest {
     private static final Validator OTHER_VALIDATOR = ValidatorRegistry.register("other_validator",
             stringRule("namePrefix").notNull().maxLength(24),
             stringRule("nameSufix").notNull().maxLength(getInteger("nameLength")),
-            stringRule("nameContains").notNull().minLength(getInteger("nameLength").div(string("5").toLong().toInteger().add(getInteger("nameLength")).remain(now().dayOfMonth()))),
+            stringRule("nameContains").notNull().minLength(getInteger("nameLength").div(string("5").toLong().toInteger().add(getInteger("nameLength")).remain(now().dayOfMonth().add(1)))),
             objectRule("nameLength").notNull()
     );
 
