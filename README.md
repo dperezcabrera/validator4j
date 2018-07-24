@@ -1,6 +1,6 @@
 [![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Build Status](https://travis-ci.org/dperezcabrera/validator4j.svg?branch=master)](https://travis-ci.org/dperezcabrera/validator4j)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.github.dperezcabrera:validator4j)](https://sonarcloud.io/dashboard/index/com.github.dperezcabrera:validator4j)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.github.dperezcabrera%3Avalidator4j&metric=alert_status)](https://sonarcloud.io/dashboard/index/com.github.dperezcabrera:validator4j)
 [![GitHub issues](https://img.shields.io/github/issues-raw/dperezcabrera/validator4j.svg?maxAge=2592000)](https://github.com/dperezcabrera/validator4j/issues)
 
 
