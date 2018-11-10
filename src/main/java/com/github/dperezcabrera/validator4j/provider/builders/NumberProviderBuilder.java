@@ -48,9 +48,8 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
         return operator;
     }
     
-    
     public IntegerProviderBuilder toInteger() {
-        return addFunction(Integer::intValue, new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+        return addFunction(Number::intValue, new IntegerProviderBuilder.IntegerProviderBuilderFactory());
     }
     
     public LongProviderBuilder toLong() {
