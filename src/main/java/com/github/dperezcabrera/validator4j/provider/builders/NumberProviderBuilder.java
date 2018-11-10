@@ -50,7 +50,7 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
     
     
     public IntegerProviderBuilder toInteger() {
-        return addFunction(t ->  t.intValue(), new IntegerProviderBuilder.IntegerProviderBuilderFactory());
+        return addFunction(Integer::intValue, new IntegerProviderBuilder.IntegerProviderBuilderFactory());
     }
     
     public LongProviderBuilder toLong() {
