@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
+ * Copyright (C) 2016-2018 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import com.github.dperezcabrera.validator4j.core.ErrorManager;
 import com.github.dperezcabrera.validator4j.core.Selector;
 import com.github.dperezcabrera.validator4j.core.ParametrizedRulesChainAdapter;
 import com.github.dperezcabrera.validator4j.core.SelectorBase;
-import static com.github.dperezcabrera.validator4j.util.Utility.checkNotNull;
+import static com.github.dperezcabrera.validator4j.util.Utilities.checkNotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

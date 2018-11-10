@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2016 David Pérez Cabrera <dperezcabrera@gmail.com>
+ * Copyright (C) 2018 David Pérez Cabrera <dperezcabrera@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General Public License as published from
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -14,20 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.dperezcabrera.validator4j.spring;
+package com.github.dperezcabrera.validator4j.utils;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+public class Country {
 
-/**
- *
- * @author David Pérez Cabrera <dperezcabrera@gmail.com>
- */
-@Configuration
-public class Validator4jConfigurationSelector {
+	private final Long id;
+	private final String language;
+	private final String name;
 
-    @Bean
-    public Validator4jAdvisor validator4jAdvisor() {
-        return new Validator4jAdvisor();
-    }
+	public Country(Long id, String language, String name) {
+		this.id = id;
+		this.language = language;
+		this.name = name;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 }

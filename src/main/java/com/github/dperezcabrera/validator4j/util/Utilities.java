@@ -20,9 +20,9 @@ package com.github.dperezcabrera.validator4j.util;
  *
  * @author David Pérez Cabrera <dperezcabrera@gmail.com>
  */
-public final class Utility {
+public final class Utilities {
 
-    private Utility() {
+    private Utilities() {
     }
 
     public static <T> T checkNotNull(T obj) {
