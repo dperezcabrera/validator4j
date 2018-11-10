@@ -79,7 +79,7 @@ public class ProviderBuilder<T, F extends ProviderBuilder<T, F>> {
         return (G) factory.build(provider, new ArrayList<>(nextFunctions));
     }
 
-    public <K, G extends ProviderBuilder<K, G>> G addFunction(BiFunction<T, Selector, K> function, ProviderBuilderFactory<K, G> factory) {
+    public <K, G extends ProviderBuilder<K, G>> G addFunction2(BiFunction<T, Selector, K> function, ProviderBuilderFactory<K, G> factory) {
         return add(function, factory);
     }
 

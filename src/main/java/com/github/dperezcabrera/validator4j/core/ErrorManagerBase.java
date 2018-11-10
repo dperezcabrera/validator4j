@@ -37,18 +37,9 @@ public class ErrorManagerBase implements ErrorManager {
         return errors;
     }
 
-    private static List<String> getList(Map<String, List<String>> map, String key) {
-        List<String> result = map.get(key);
-        if (result == null) {
-            result = new ArrayList<>();
-            map.put(key, result);
-        }
-        return result;
-    }
-
     @Override
     public void addErrorMessage(String name, String message) {
-        getList(getErrors(), name).add(message);
+        getErrors().computeIfAbsent(name, k -> new ArrayList<>()).add(message);
     }
 
     @Override

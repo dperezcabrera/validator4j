@@ -70,7 +70,7 @@ public class CalendarProviderBuilder<F extends CalendarProviderBuilder<F>> exten
     }
 
     public LongProviderBuilder timeInMillisecond() {
-        return addFunction(t ->  t.getTimeInMillis(), new LongProviderBuilder.LongProviderBuilderFactory());
+        return addFunction(Calendar::getTimeInMillis, new LongProviderBuilder.LongProviderBuilderFactory());
     }
 
     public IntegerProviderBuilder year() {

@@ -41,6 +41,6 @@ public class ObjectProviderBuilder<T, F extends ObjectProviderBuilder<T, F>> ext
     }
 
     public StringProviderBuilderBase string() {
-        return addFunction(t -> t.toString(), new StringProviderBuilderFactory());
+        return addFunction(Object::toString, new StringProviderBuilderFactory());
     }
 }

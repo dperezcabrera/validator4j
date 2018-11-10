@@ -31,7 +31,7 @@ public class StringRuleBuilder<F extends StringRuleBuilder<F>> extends Comparabl
     }
 
     public F empty() {
-        return addRule(t -> t.isEmpty());
+        return addRule(String::isEmpty);
     }
 
     public F notEmpty() {

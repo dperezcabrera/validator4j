@@ -88,19 +88,19 @@ public class StringProviderBuilder<F extends StringProviderBuilder<F>> extends O
     }
 
     public IntegerProviderBuilder toInteger() {
-        return addFunction(t -> Integer.valueOf(t), new IntegerProviderBuilderFactory());
+        return addFunction(Integer::valueOf, new IntegerProviderBuilderFactory());
     }
 
     public LongProviderBuilder toLong() {
-        return addFunction(t -> Long.valueOf(t), new LongProviderBuilderFactory());
+        return addFunction(Long::valueOf, new LongProviderBuilderFactory());
     }
 
     public DoubleProviderBuilder toDouble() {
-        return addFunction(t -> Double.valueOf(t), new DoubleProviderBuilder.DoubleProviderBuilderFactory());
+        return addFunction(Double::valueOf, new DoubleProviderBuilder.DoubleProviderBuilderFactory());
     }
 
     public FloatProviderBuilder toFloat() {
-        return addFunction(t -> Float.valueOf(t), new FloatProviderBuilder.FloatProviderBuilderFactory());
+        return addFunction(Float::valueOf, new FloatProviderBuilder.FloatProviderBuilderFactory());
     }
 
     public CalendarProviderBuilderBase toCalendar(String format) {
@@ -108,11 +108,11 @@ public class StringProviderBuilder<F extends StringProviderBuilder<F>> extends O
     }
 
     public CalendarProviderBuilderBase toCalendar(ProviderBuilder<String, ?> providerBuilder) {
-        return addFunction((t, s) -> toCalendar(t, providerBuilder.data(s)), new CalendarProviderBuilderFactory());
+        return addFunction2((t, s) -> toCalendar(t, providerBuilder.data(s)), new CalendarProviderBuilderFactory());
     }
 
     public IntegerProviderBuilder length() {
-        return addFunction(t -> t.length(), new IntegerProviderBuilderFactory());
+        return addFunction(String::length, new IntegerProviderBuilderFactory());
     }
 
     private static Calendar toCalendar(String value, String format) {

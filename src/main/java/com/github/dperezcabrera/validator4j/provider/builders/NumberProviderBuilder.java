@@ -54,15 +54,15 @@ public class NumberProviderBuilder<N extends Number, O extends Operator<N>, F ex
     }
     
     public LongProviderBuilder toLong() {
-        return addFunction(t ->  t.longValue(), new LongProviderBuilder.LongProviderBuilderFactory());
+        return addFunction(Number::longValue, new LongProviderBuilder.LongProviderBuilderFactory());
     }
     
     public DoubleProviderBuilder toDouble() {
-        return addFunction(t ->  t.doubleValue(), new DoubleProviderBuilder.DoubleProviderBuilderFactory());
+        return addFunction(Number::doubleValue, new DoubleProviderBuilder.DoubleProviderBuilderFactory());
     }
     
     public FloatProviderBuilder toFloat() {
-        return addFunction(t ->  t.floatValue(), new FloatProviderBuilder.FloatProviderBuilderFactory());
+        return addFunction(Number::floatValue, new FloatProviderBuilder.FloatProviderBuilderFactory());
     }
     
     public F add(N parameter) {
